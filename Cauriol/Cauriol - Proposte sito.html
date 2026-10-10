@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cauriol ASD — Sito istituzionale · Proposte di design</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #E9E6DC; }
+  body { font-family: system-ui, sans-serif; }
+  .page-note {
+    max-width: 1200px; margin: 24px auto 16px; padding: 0 24px;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(14,15,12,0.65);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .page-note .pill {
+    padding: 6px 10px; border: 1px solid rgba(14,15,12,0.25);
+    background: #FAFAF7;
+  }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+
+<div class="page-note">
+  <span>Cauriol ASD · Proposte sito istituzionale · v1 · 22.04.2026</span>
+  <span class="pill">Due direzioni · pan/zoom · click per aprire fullscreen</span>
+</div>
+
+<div id="root"></div>
+
+<!-- Design canvas (starter) -->
+<script type="text/babel" src="lib/design-canvas.jsx"></script>
+
+<!-- Shared primitives & data -->
+<script type="text/babel" src="lib/shared.jsx"></script>
+
+<!-- Variant A -->
+<script type="text/babel" src="lib/variant-a-shell.jsx"></script>
+<script type="text/babel" src="lib/variant-a-pages-1.jsx"></script>
+<script type="text/babel" src="lib/variant-a-pages-2.jsx"></script>
+<script type="text/babel" src="lib/variant-a-pages-3.jsx"></script>
+<script type="text/babel" src="lib/variant-a-app.jsx"></script>
+
+<!-- Variant B -->
+<script type="text/babel" src="lib/variant-b-shell.jsx"></script>
+<script type="text/babel" src="lib/variant-b-pages-1.jsx"></script>
+<script type="text/babel" src="lib/variant-b-pages-2.jsx"></script>
+<script type="text/babel" src="lib/variant-b-pages-3.jsx"></script>
+
+<!-- Main app -->
+<script type="text/babel" src="lib/main.jsx"></script>
+</body>
+</html>

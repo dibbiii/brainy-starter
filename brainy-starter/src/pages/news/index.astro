@@ -1,0 +1,6 @@
+---
+import NewsList from '../../components/NewsList.astro';
+import { publishedNews, PER_PAGE } from '../../lib/news';
+const all = await publishedNews();
+---
+<NewsList posts={all.slice(0, PER_PAGE)} current={1} last={Math.max(1, Math.ceil(all.length / PER_PAGE))} />

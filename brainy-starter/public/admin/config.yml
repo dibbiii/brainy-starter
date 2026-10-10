@@ -1,0 +1,325 @@
+# =============================================================
+#  Configurazione Decap CMS — Brainy Starter
+#  Per un nuovo cliente cambia SOLO la sezione "backend".
+#  Ogni campo qui sotto ha un gemello in src/content.config.ts
+#  o in src/lib/site.ts: se ne modifichi uno, modifica l'altro.
+# =============================================================
+
+backend:
+  name: github
+  repo: brainylabs/NOME-REPO-CLIENTE   # <-- da cambiare per ogni cliente
+  branch: main
+  # base_url: https://auth.tuodominio.it  # solo se usi un proxy OAuth tuo (vedi README)
+
+# In locale (npm run cms) scrive direttamente sul disco, senza login
+local_backend: true
+
+locale: it
+site_url: /
+display_url: /
+logo_url: /favicon.svg
+
+media_folder: public/uploads
+public_folder: /uploads
+
+collections:
+  # -----------------------------------------------------------
+  #  NEWS
+  # -----------------------------------------------------------
+  - name: news
+    label: News
+    label_singular: News
+    folder: src/content/news
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    summary: "{{title}} — {{date | date('DD/MM/YYYY')}}"
+    sortable_fields: [date, title]
+    view_filters:
+      - { label: Bozze, field: draft, pattern: true }
+    fields:
+      - { label: Titolo, name: title, widget: string }
+      - { label: Data, name: date, widget: datetime, default: "{{now}}", format: "YYYY-MM-DD", date_format: "DD/MM/YYYY", time_format: false }
+      - { label: Sommario, name: excerpt, widget: text, hint: "Due righe che compaiono nell'elenco news e nei motori di ricerca" }
+      - { label: Immagine o locandina, name: cover, widget: image, required: false }
+      - { label: Testo alternativo immagine, name: cover_alt, widget: string, required: false, hint: "Descrivi l'immagine per chi non la vede" }
+      - label: Allegati
+        name: attachments
+        widget: list
+        required: false
+        summary: "{{fields.label}}"
+        fields:
+          - { label: Nome del file, name: label, widget: string }
+          - { label: File, name: file, widget: file }
+      - { label: Bozza (non pubblicare), name: draft, widget: boolean, default: false, required: false }
+      - { label: Testo, name: body, widget: markdown }
+
+  # -----------------------------------------------------------
+  #  PAGINE (page builder a blocchi)
+  # -----------------------------------------------------------
+  - name: pages
+    label: Pagine
+    label_singular: Pagina
+    folder: src/content/pages
+    create: true
+    slug: "{{slug}}"
+    identifier_field: title
+    editor: { preview: false }
+    summary: "{{title}}  (/{{slug}})"
+    fields:
+      - { label: Titolo, name: title, widget: string }
+      - { label: Descrizione per Google, name: description, widget: text, required: false }
+      - { label: Mostra il titolo in cima alla pagina, name: show_title, widget: boolean, default: true, required: false }
+      - label: Sezioni
+        name: sections
+        widget: list
+        required: false
+        hint: "Componi la pagina aggiungendo e riordinando le sezioni"
+        types:
+          - label: Copertina
+            name: hero
+            widget: object
+            summary: "{{fields.title}}"
+            fields:
+              - { label: Titolo, name: title, widget: string }
+              - { label: Sottotitolo, name: subtitle, widget: text, required: false }
+              - { label: Immagine di sfondo, name: image, widget: image, required: false }
+              - { label: Testo pulsante, name: button_label, widget: string, required: false }
+              - { label: Link pulsante, name: button_url, widget: string, required: false }
+              - { label: Altezza, name: size, widget: select, options: [{ label: Grande, value: large }, { label: Media, value: medium }], default: large }
+
+          - label: Testo
+            name: text
+            widget: object
+            summary: "{{fields.title}}"
+            fields:
+              - { label: Titolo, name: title, widget: string, required: false }
+              - { label: Contenuto, name: content, widget: markdown }
+
+          - label: Testo con immagine
+            name: text_image
+            widget: object
+            summary: "{{fields.title}}"
+            fields:
+              - { label: Titolo, name: title, widget: string, required: false }
+              - { label: Contenuto, name: content, widget: markdown }
+              - { label: Immagine, name: image, widget: image }
+              - { label: Testo alternativo, name: image_alt, widget: string, required: false }
+              - { label: Immagine a, name: image_side, widget: select, options: [{ label: Destra, value: right }, { label: Sinistra, value: left }], default: right }
+
+          - label: Schede (gare, corsi, discipline…)
+            name: cards
+            widget: object
+            summary: "{{fields.title}}"
+            fields:
+              - { label: Titolo, name: title, widget: string, required: false }
+              - { label: Introduzione, name: intro, widget: text, required: false }
+              - label: Schede
+                name: items
+                widget: list
+                summary: "{{fields.title}}"
+                fields:
+                  - { label: Titolo, name: title, widget: string }
+                  - { label: Dato in evidenza, name: highlight, widget: string, required: false, hint: "Es. 120 km, Under 14, Sabato 9:00" }
+                  - { label: Testo, name: text, widget: text, required: false }
+                  - { label: Immagine, name: image, widget: image, required: false }
+                  - { label: Link, name: url, widget: string, required: false }
+
+          - label: Team
+            name: team
+            widget: object
+            summary: "{{fields.title}}"
+            fields:
+              - { label: Titolo, name: title, widget: string, required: false }
+              - { label: Introduzione, name: intro, widget: text, required: false }
+              - { label: Quante persone mostrare (0 = tutte), name: limit, widget: number, value_type: int, default: 0, min: 0 }
+
+          - label: Sponsor
+            name: sponsors
+            widget: object
+            summary: "{{fields.title}}"
+            fields:
+              - { label: Titolo, name: title, widget: string, required: false }
+              - { label: Introduzione, name: intro, widget: text, required: false }
+
+          - label: Galleria foto
+            name: gallery
+            widget: object
+            summary: "{{fields.title}}"
+            fields:
+              - { label: Titolo, name: title, widget: string, required: false }
+              - label: Foto
+                name: images
+                widget: list
+                summary: "{{fields.caption}}"
+                fields:
+                  - { label: Foto, name: image, widget: image }
+                  - { label: Didascalia, name: caption, widget: string, required: false }
+
+          - label: Invito all'azione
+            name: cta
+            widget: object
+            summary: "{{fields.title}}"
+            fields:
+              - { label: Titolo, name: title, widget: string }
+              - { label: Testo, name: text, widget: text, required: false }
+              - { label: Testo pulsante, name: button_label, widget: string }
+              - { label: Link pulsante, name: button_url, widget: string }
+
+          - label: Documenti da scaricare
+            name: documents
+            widget: object
+            summary: "{{fields.title}}"
+            fields:
+              - { label: Titolo, name: title, widget: string, required: false }
+              - label: File
+                name: files
+                widget: list
+                summary: "{{fields.label}}"
+                fields:
+                  - { label: Nome, name: label, widget: string }
+                  - { label: File, name: file, widget: file }
+
+          - label: Ultime news
+            name: latest_news
+            widget: object
+            summary: "{{fields.title}}"
+            fields:
+              - { label: Titolo, name: title, widget: string, default: "Ultime news" }
+              - { label: Quante news, name: count, widget: number, value_type: int, default: 3, min: 1, max: 12 }
+
+          - label: Video YouTube
+            name: video
+            widget: object
+            summary: "{{fields.title}}"
+            fields:
+              - { label: Titolo, name: title, widget: string, required: false }
+              - { label: Link del video, name: url, widget: string, hint: "Incolla il link di YouTube. Il video si carica solo dopo il clic del visitatore (GDPR)." }
+
+          - label: Contatti
+            name: contacts
+            widget: object
+            summary: "{{fields.title}}"
+            fields:
+              - { label: Titolo, name: title, widget: string, default: "Contatti" }
+              - { label: Introduzione, name: intro, widget: text, required: false }
+
+  # -----------------------------------------------------------
+  #  IMPOSTAZIONI (un file per argomento)
+  # -----------------------------------------------------------
+  - name: settings
+    label: Impostazioni
+    editor: { preview: false }
+    files:
+      - label: Dati del sito
+        name: site
+        file: src/data/site.json
+        fields:
+          - { label: Nome, name: name, widget: string }
+          - { label: Motto, name: tagline, widget: string, required: false }
+          - { label: Indirizzo del sito, name: url, widget: string, hint: "Es. https://www.esempio.it — serve per sitemap e condivisioni" }
+          - { label: Logo, name: logo, widget: image, required: false }
+          - { label: Mostra il nome accanto al logo, name: show_name_with_logo, widget: boolean, default: false, required: false, hint: "Se spento, con il logo caricato si vede solo il logo" }
+          - { label: Sottotitolo nell'intestazione, name: header_subtitle, widget: string, required: false, hint: "Riga piccola sotto il nome. Es. ASD · Ziano di Fiemme" }
+          - { label: Pulsante in evidenza — testo, name: header_button_label, widget: string, required: false, hint: "Es. Tesseramento. Compare solo se compili anche il link" }
+          - { label: Pulsante in evidenza — link, name: header_button_url, widget: string, required: false }
+          - { label: Immagine per condivisioni social, name: og_image, widget: image, required: false }
+          - { label: Email, name: email, widget: string, required: false }
+          - { label: Telefono, name: phone, widget: string, required: false }
+          - { label: Indirizzo, name: address, widget: text, required: false }
+          - { label: Codice fiscale / P.IVA, name: tax_id, widget: string, required: false }
+          - label: Social
+            name: socials
+            widget: list
+            required: false
+            summary: "{{fields.platform}}"
+            fields:
+              - { label: Piattaforma, name: platform, widget: select, options: [Facebook, Instagram, YouTube, Strava, LinkedIn, TikTok, Altro] }
+              - { label: Link, name: url, widget: string }
+          - { label: Link informativa privacy, name: privacy_url, widget: string, default: "/privacy" }
+          - { label: Testo a piè di pagina, name: footer_note, widget: text, required: false }
+
+      - label: Aspetto
+        name: theme
+        file: src/data/theme.json
+        fields:
+          - { label: Colore principale, name: primary, widget: color }
+          - { label: "Colore accento (segnavia e pulsanti)", name: accent, widget: color }
+          - { label: Colore testo, name: ink, widget: color }
+          - { label: Colore sfondo, name: paper, widget: color }
+          - label: Carattere titoli
+            name: heading_font
+            widget: select
+            options:
+              - { label: "Barlow Condensed (sportivo)", value: barlow }
+              - { label: "Archivo (moderno)", value: archivo }
+              - { label: "Fraunces (elegante)", value: fraunces }
+          - label: Carattere testo
+            name: body_font
+            widget: select
+            options:
+              - { label: "Source Sans (neutro)", value: source }
+              - { label: "Atkinson Hyperlegible (massima leggibilità)", value: atkinson }
+              - { label: "Lora (classico)", value: lora }
+          - label: Angoli
+            name: corners
+            widget: select
+            options:
+              - { label: Squadrati, value: square }
+              - { label: Leggermente arrotondati, value: soft }
+
+      - label: Menu
+        name: menu
+        file: src/data/menu.json
+        fields:
+          - label: Voci
+            name: items
+            widget: list
+            summary: "{{fields.label}}"
+            fields:
+              - { label: Etichetta, name: label, widget: string }
+              - { label: Link, name: url, widget: string, required: false, hint: "Es. /chi-siamo oppure https://… Lascia vuoto se la voce ha solo un sottomenu" }
+              - label: Sottomenu
+                name: children
+                widget: list
+                required: false
+                summary: "{{fields.label}}"
+                fields:
+                  - { label: Etichetta, name: label, widget: string }
+                  - { label: Link, name: url, widget: string }
+
+      - label: Team
+        name: team
+        file: src/data/team.json
+        fields:
+          - label: Persone
+            name: people
+            widget: list
+            summary: "{{fields.name}} — {{fields.role}}"
+            fields:
+              - { label: Nome, name: name, widget: string }
+              - { label: Ruolo, name: role, widget: string }
+              - { label: Foto, name: photo, widget: image, required: false }
+              - { label: Email, name: email, widget: string, required: false }
+              - { label: Breve presentazione, name: bio, widget: text, required: false }
+
+      - label: Sponsor
+        name: sponsors
+        file: src/data/sponsors.json
+        fields:
+          - label: Sponsor
+            name: items
+            widget: list
+            summary: "{{fields.name}}"
+            fields:
+              - { label: Nome, name: name, widget: string }
+              - { label: Logo, name: logo, widget: image, required: false }
+              - { label: Sito, name: url, widget: string, required: false }
+              - label: Livello
+                name: tier
+                widget: select
+                default: partner
+                options:
+                  - { label: Principale, value: main }
+                  - { label: Partner, value: partner }
+                  - { label: Istituzionale, value: institutional }
+          - { label: Mostra gli sponsor nel piè di pagina, name: show_in_footer, widget: boolean, default: true }

@@ -1,0 +1,30 @@
+{
+  "name": "brainy-starter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Base riutilizzabile Astro + Decap CMS per siti statici di associazioni e piccole aziende",
+  "scripts": {
+    "postinstall": "node scripts/copy-decap.mjs",
+    "dev": "astro dev",
+    "cms": "decap-server",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/archivo": "^5.3.0",
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/lora": "^5.3.0",
+    "@fontsource-variable/source-sans-3": "^5.3.0",
+    "@fontsource/atkinson-hyperlegible": "^5.3.0",
+    "@fontsource/barlow-condensed": "^5.3.0",
+    "astro": "^7.3.7",
+    "decap-cms": "^3.16.3",
+    "marked": "^18.1.0"
+  },
+  "devDependencies": {
+    "decap-server": "^3.11.3"
+  }
+}

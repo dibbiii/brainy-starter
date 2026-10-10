@@ -1,0 +1,112 @@
+---
+// Il menu mobile usa <details>: funziona senza JavaScript.
+import { menu, site } from '../lib/site';
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (url?: string) => {
+  if (!url) return false;
+  const clean = url.split('#')[0].replace(/\/$/, '') || '/';
+  return clean === '/' ? path === '/' : path === clean || path.startsWith(clean + '/');
+};
+// Senza logo si vede sempre il nome; con il logo solo se l'editor lo chiede.
+const showText = !site.logo || site.show_name_with_logo;
+const hasButton = Boolean(site.header_button_label && site.header_button_url);
+---
+<header class="header">
+  <div class="wrap header__inner">
+    <a class="brand" href="/">
+      {site.logo && <img src={site.logo} alt={showText ? '' : site.name} height="48" />}
+      {showText && (
+        <span class="brand__text">
+          <span class="brand__name">{site.name}</span>
+          {site.header_subtitle && <span class="brand__sub">{site.header_subtitle}</span>}
+        </span>
+      )}
+    </a>
+    <div class="header__actions">
+    <details class="nav">
+      <summary class="nav__toggle"><span>Menu</span></summary>
+      <nav aria-label="Principale">
+        <ul class="nav__list">
+          {menu.map((item) => (
+            <li class:list={['nav__item', { 'has-children': item.children?.length }]}>
+              {item.url
+                ? <a href={item.url} aria-current={isActive(item.url) ? 'page' : undefined}>{item.label}</a>
+                : <span class="nav__label">{item.label}</span>}
+              {item.children && item.children.length > 0 && (
+                <ul class="nav__sub">
+                  {item.children.map((c) => <li><a href={c.url}>{c.label}</a></li>)}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </details>
+    {hasButton && <a class="button header__button" href={site.header_button_url}>{site.header_button_label}</a>}
+    </div>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky; top: 0; z-index: 20;
+    background: var(--c-paper);
+    border-bottom: 1px solid var(--c-line);
+  }
+  .header__inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 4.25rem; }
+  .brand { font-family: var(--f-heading); font-weight: 700; font-size: 1.6rem; color: var(--c-ink); text-decoration: none; line-height: 1; }
+  .brand { display: flex; align-items: center; gap: 0.65rem; min-width: 0; }
+  .brand img { height: 3rem; width: auto; }
+  .brand__text { display: flex; flex-direction: column; gap: 0.2rem; }
+  .brand__sub { font-family: var(--f-body); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-muted); }
+  .header__actions { display: flex; align-items: center; gap: 0.75rem; }
+  .header__button { padding: 0.55em 1em; font-size: 0.95rem; white-space: nowrap; }
+  @media (max-width: 40rem) { .brand__sub { display: none; } }
+  .nav__toggle {
+    list-style: none; cursor: pointer; font-weight: 600;
+    padding: 0.5rem 0.9rem; border: 2px solid var(--c-ink); border-radius: var(--radius);
+  }
+  .nav__toggle::-webkit-details-marker { display: none; }
+  .nav[open] .nav__toggle { background: var(--c-ink); color: var(--c-paper); }
+  .nav__list, .nav__sub { list-style: none; margin: 0; padding: 0; }
+  .nav__list a, .nav__label { display: block; padding: 0.6rem 0; color: var(--c-ink); text-decoration: none; font-weight: 600; }
+  .nav__list a:hover { color: var(--c-accent); }
+  .nav__list a[aria-current='page'] { color: var(--c-accent); }
+  .nav__sub a { font-weight: 400; padding-left: 1rem; }
+
+  /* Mobile: il pannello si apre sotto l'header */
+  @media (max-width: 52rem) {
+    .nav nav {
+      position: absolute; left: 0; right: 0; top: 100%;
+      background: var(--c-paper); border-bottom: 1px solid var(--c-line);
+      padding: 0.5rem var(--gap) 1.25rem;
+      max-height: calc(100vh - 4.25rem); overflow-y: auto;
+    }
+    .nav__item { border-top: 1px solid var(--c-line); }
+  }
+
+  /* Desktop: menu sempre visibile, sottomenu a tendina */
+  @media (min-width: 52.01rem) {
+    .nav__toggle { display: none; }
+    .nav::details-content { content-visibility: visible; display: contents; }
+    .nav > nav { display: block; }
+    .nav__list { display: flex; gap: 1.75rem; }
+    .nav__item { position: relative; }
+    .nav__sub {
+      position: absolute; top: 100%; left: -1rem; min-width: 14rem;
+      background: var(--c-paper); border: 1px solid var(--c-line); border-top: 3px solid var(--c-accent);
+      padding: 0.4rem 1rem; display: none;
+    }
+    .nav__sub a { padding-left: 0; }
+    .nav__item:hover > .nav__sub, .nav__item:focus-within > .nav__sub { display: block; }
+  }
+</style>
+
+<script>
+  // Su desktop il <details> deve risultare sempre aperto
+  const nav = document.querySelector<HTMLDetailsElement>('.nav');
+  const mq = window.matchMedia('(min-width: 52.01rem)');
+  const sync = () => { if (nav && mq.matches) nav.open = true; };
+  sync();
+  mq.addEventListener('change', sync);
+</script>

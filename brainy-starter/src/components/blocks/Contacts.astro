@@ -1,0 +1,25 @@
+---
+// Niente modulo di contatto di default: un form richiede un servizio esterno
+// che tratta dati personali (vedi README, sezione GDPR).
+import { site } from '../../lib/site';
+interface Props { title?: string; intro?: string; id?: string }
+const { title, intro, id } = Astro.props;
+---
+<section class="section" id={id}>
+  <div class="wrap">
+    {title && <h2>{title}</h2>}
+    {intro && <p class="lead">{intro}</p>}
+    <dl class="contacts">
+      {site.email && <div><dt>Email</dt><dd><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>}
+      {site.phone && <div><dt>Telefono</dt><dd><a href={`tel:${site.phone.replace(/\s/g, '')}`}>{site.phone}</a></dd></div>}
+      {site.address && <div><dt>Indirizzo</dt><dd set:html={site.address.replace(/\n/g, '<br>')} /></div>}
+    </dl>
+  </div>
+</section>
+
+<style>
+  .contacts { display: grid; gap: 2rem var(--gap); grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); margin: 2rem 0 0; }
+  .contacts > div { border-top: 3px solid var(--c-ink); padding-top: 0.9rem; }
+  .contacts dt { color: var(--c-muted); font-size: 0.95rem; }
+  .contacts dd { margin: 0.25rem 0 0; font-size: 1.3rem; font-weight: 600; }
+</style>

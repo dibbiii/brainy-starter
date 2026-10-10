@@ -1,0 +1,29 @@
+---
+// Galleria senza librerie: ogni foto si apre a piena risoluzione in una nuova scheda.
+interface Props { title?: string; images: { image: string; caption?: string }[]; id?: string }
+const { title, images, id } = Astro.props;
+---
+<section class="section" id={id}>
+  <div class="wrap">
+    {title && <h2>{title}</h2>}
+    <ul class="gallery">
+      {images.map((g) => (
+        <li>
+          <figure>
+            <a href={g.image} target="_blank" rel="noopener">
+              <img src={g.image} alt={g.caption ?? ''} loading="lazy" />
+            </a>
+            {g.caption && <figcaption>{g.caption}</figcaption>}
+          </figure>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .gallery { list-style: none; padding: 0; margin: 2rem 0 0; display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); }
+  .gallery figure { margin: 0; }
+  .gallery img { aspect-ratio: 1; object-fit: cover; width: 100%; border-radius: var(--radius); }
+  .gallery figcaption { font-size: 0.9rem; color: var(--c-muted); margin-top: 0.35rem; }
+</style>

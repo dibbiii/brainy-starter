@@ -1,0 +1,95 @@
+---
+import { team } from "../../lib/site";
+interface Props {
+    title?: string;
+    intro?: string;
+    limit?: number;
+    id?: string;
+}
+const { title, intro, limit = 0, id } = Astro.props;
+const people = limit > 0 ? team.slice(0, limit) : team;
+const initials = (n: string) =>
+    n
+        .split(/\s+/)
+        .map((p) => p[0])
+        .slice(0, 2)
+        .join("");
+---
+
+<section class="section" id={id}>
+    <div class="wrap">
+        {title && <h2>{title}</h2>}
+        {intro && <p class="lead">{intro}</p>}
+        <ul class="team">
+            {people.map((p) => (
+                <li>
+                    {p.photo ? (
+                        <img src={p.photo} alt="" loading="lazy" />
+                    ) : (
+                        <span class="team__ph" aria-hidden="true">
+                            {initials(p.name)}
+                        </span>
+                    )}
+                    <h3>{p.name}</h3>
+                    <p class="team__role">{p.role}</p>
+                    {p.bio && <p class="team__bio">{p.bio}</p>}
+                    {p.email && (
+                        <p class="team__mail">
+                            <a href={`mailto:${p.email}`}>{p.email}</a>
+                        </p>
+                    )}
+                </li>
+            ))}
+        </ul>
+    </div>
+</section>
+
+<style>
+    .team {
+        list-style: none;
+        padding: 0;
+        margin: 2rem 0 0;
+        display: grid;
+        gap: 2rem var(--gap);
+        grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    }
+    .team img,
+    .team__ph {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-radius: var(--radius);
+        margin-bottom: 0.9rem;
+    }
+    .team__ph {
+        display: grid;
+        place-items: center;
+        background: var(--c-tint);
+        font-family: var(--f-heading);
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--c-primary);
+    }
+    .team h3 {
+        margin-bottom: 0.15rem;
+    }
+    .team__role {
+        color: var(--c-accent);
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+    }
+    .team__bio {
+        color: var(--c-muted);
+        font-size: 0.97rem;
+    }
+    .team__mail {
+        font-size: 0.92rem;
+        margin-bottom: 0.4rem;
+    }
+    .team__mail a {
+        color: var(--c-muted);
+    }
+    .team__mail a:hover {
+        color: var(--c-accent);
+    }
+</style>

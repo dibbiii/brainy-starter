@@ -1,0 +1,43 @@
+---
+// GDPR: nessuna richiesta a YouTube finché il visitatore non clicca.
+// Poi si usa youtube-nocookie.com.
+import { youtubeId } from '../../lib/format';
+interface Props { title?: string; url: string; id?: string }
+const { title, url, id } = Astro.props;
+const vid = youtubeId(url);
+---
+{vid && (
+  <section class="section" id={id}>
+    <div class="wrap">
+      {title && <h2>{title}</h2>}
+      <div class="video" data-video={vid}>
+        <div class="video__consent">
+          <p>Il video è ospitato su YouTube. Se lo carichi, YouTube riceverà alcuni dati sulla tua visita, come l'indirizzo IP.</p>
+          <button type="button" class="button">Carica il video</button>
+          <a href={`https://www.youtube.com/watch?v=${vid}`} rel="noopener">Oppure guardalo su YouTube</a>
+        </div>
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .video { aspect-ratio: 16 / 9; background: var(--c-ink); color: #fff; border-radius: var(--radius); overflow: hidden; max-width: 56rem; }
+  .video__consent { height: 100%; display: grid; place-content: center; justify-items: center; text-align: center; gap: 1rem; padding: 1.5rem; }
+  .video__consent p { max-width: 30rem; margin: 0; }
+  .video__consent a { color: #fff; font-size: 0.95rem; }
+  .video :global(iframe) { width: 100%; height: 100%; border: 0; display: block; }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.video[data-video]').forEach((box) => {
+    box.querySelector('button')?.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${box.dataset.video}?autoplay=1`;
+      iframe.title = 'Video YouTube';
+      iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+      iframe.allowFullscreen = true;
+      box.replaceChildren(iframe);
+    });
+  });
+</script>

@@ -1,0 +1,26 @@
+---
+interface Props { title: string; text?: string; button_label: string; button_url: string; id?: string }
+const { title, text, button_label, button_url, id } = Astro.props;
+---
+<section class="section" id={id}>
+  <div class="wrap">
+    <div class="cta">
+      <div>
+        <h2>{title}</h2>
+        {text && <p>{text}</p>}
+      </div>
+      <a class="button button--ghost" href={button_url}>{button_label}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta {
+    background: var(--c-primary); color: #fff; border-radius: var(--radius);
+    padding: clamp(2rem, 5vw, 3.5rem);
+    display: flex; flex-wrap: wrap; gap: 1.5rem 3rem; align-items: center; justify-content: space-between;
+    border-left: 0.75rem solid var(--c-accent);
+  }
+  .cta h2 { margin-bottom: 0.25em; }
+  .cta p { margin: 0; max-width: 36rem; }
+</style>

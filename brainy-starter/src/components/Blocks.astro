@@ -1,0 +1,35 @@
+---
+// Smista ogni sezione della pagina al componente giusto in base a "type".
+// Per aggiungere un nuovo blocco: 1) config.yml  2) content.config.ts  3) qui.
+import type { Section } from '../content.config';
+import Hero from './blocks/Hero.astro';
+import Text from './blocks/Text.astro';
+import TextImage from './blocks/TextImage.astro';
+import Cards from './blocks/Cards.astro';
+import Team from './blocks/Team.astro';
+import Sponsors from './blocks/Sponsors.astro';
+import Gallery from './blocks/Gallery.astro';
+import Cta from './blocks/Cta.astro';
+import Documents from './blocks/Documents.astro';
+import LatestNews from './blocks/LatestNews.astro';
+import Video from './blocks/Video.astro';
+import Contacts from './blocks/Contacts.astro';
+
+interface Props { sections: Section[] }
+const { sections } = Astro.props;
+
+const map = {
+  hero: Hero, text: Text, text_image: TextImage, cards: Cards, team: Team,
+  sponsors: Sponsors, gallery: Gallery, cta: Cta, documents: Documents,
+  latest_news: LatestNews, video: Video, contacts: Contacts,
+} as const;
+
+// Ancora automatica per i link del menu (es. /la-societa#team)
+const anchors: Partial<Record<Section['type'], string>> = {
+  team: 'team', documents: 'documenti', sponsors: 'sponsor', contacts: 'contatti', gallery: 'galleria',
+};
+---
+{sections.map((s, i) => {
+  const Component = map[s.type] as any;
+  return <Component {...s} id={anchors[s.type]} first={i === 0} />;
+})}

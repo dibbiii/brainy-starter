@@ -1,0 +1,19 @@
+---
+// Pannello Decap CMS su /admin.
+// È una rotta Astro (e non un public/admin/index.html) perché altrimenti
+// in sviluppo la rotta [...slug].astro intercetterebbe /admin/.
+---
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Gestione contenuti</title>
+    <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
+  </head>
+  <body>
+    <!-- Decap servito dal nostro dominio, nessuna CDN esterna (vedi scripts/copy-decap.mjs) -->
+    <script is:inline src="/admin/vendor/decap-cms.js"></script>
+  </body>
+</html>

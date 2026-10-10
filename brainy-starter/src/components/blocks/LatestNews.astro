@@ -1,0 +1,28 @@
+---
+import { getCollection } from 'astro:content';
+import NewsCard from '../NewsCard.astro';
+interface Props { title?: string; count?: number; id?: string }
+const { title, count = 3, id } = Astro.props;
+const posts = (await getCollection('news', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, count);
+---
+{posts.length > 0 && (
+  <section class="section" id={id}>
+    <div class="wrap">
+      <div class="ln__head">
+        {title && <h2>{title}</h2>}
+        <a href="/news">Tutte le news</a>
+      </div>
+      <div class="ln__grid">
+        {posts.map((post) => <NewsCard post={post} />)}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .ln__head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+  .ln__head a { font-weight: 600; }
+  .ln__grid { display: grid; gap: 2.5rem var(--gap); grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); margin-top: 1.5rem; }
+</style>

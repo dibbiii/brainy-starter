@@ -1,0 +1,30 @@
+---
+import Base from '../layouts/Base.astro';
+import NewsCard from './NewsCard.astro';
+import type { CollectionEntry } from 'astro:content';
+interface Props { posts: CollectionEntry<'news'>[]; current: number; last: number }
+const { posts, current, last } = Astro.props;
+const href = (n: number) => (n === 1 ? '/news' : `/news/pagina/${n}`);
+---
+<Base title={current === 1 ? 'News' : `News – pagina ${current}`} description="Notizie, eventi e comunicazioni.">
+  <div class="wrap section">
+    <span class="segnavia" aria-hidden="true"></span>
+    <h1>News</h1>
+    {posts.length === 0
+      ? <p class="lead">Non ci sono ancora news. La prima si pubblica dal pannello Gestione contenuti.</p>
+      : <div class="grid">{posts.map((post) => <NewsCard post={post} />)}</div>}
+    {last > 1 && (
+      <nav class="pager" aria-label="Pagine delle news">
+        {current > 1 && <a href={href(current - 1)}>Più recenti</a>}
+        <span>Pagina {current} di {last}</span>
+        {current < last && <a href={href(current + 1)}>Meno recenti</a>}
+      </nav>
+    )}
+  </div>
+</Base>
+
+<style>
+  .grid { display: grid; gap: 3rem var(--gap); grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); margin-top: 2rem; }
+  .pager { display: flex; gap: 2rem; justify-content: center; margin-top: 4rem; font-weight: 600; }
+  .pager span { color: var(--c-muted); font-weight: 400; }
+</style>

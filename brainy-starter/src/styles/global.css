@@ -1,0 +1,91 @@
+/* =============================================================
+   Stili di base. I colori e i caratteri arrivano da
+   src/data/theme.json (modificabile dal CMS) tramite variabili CSS.
+   ============================================================= */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+:root {
+  --c-muted: color-mix(in srgb, var(--c-ink) 62%, var(--c-paper));
+  --c-line: color-mix(in srgb, var(--c-ink) 14%, var(--c-paper));
+  --c-tint: color-mix(in srgb, var(--c-primary) 7%, var(--c-paper));
+  --wrap: 72rem;
+  --measure: 40rem;
+  --gap: clamp(1rem, 3vw, 2rem);
+  --space: clamp(3rem, 8vw, 6rem);
+}
+
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 5rem; }
+body {
+  margin: 0;
+  background: var(--c-paper);
+  color: var(--c-ink);
+  font-family: var(--f-body);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+img { max-width: 100%; height: auto; display: block; }
+button { font: inherit; border: 0; cursor: pointer; }
+a { color: var(--c-primary); text-underline-offset: 0.18em; }
+a:hover { color: var(--c-accent); }
+:focus-visible { outline: 3px solid var(--c-accent); outline-offset: 3px; }
+
+h1, h2, h3 {
+  font-family: var(--f-heading);
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  margin: 0 0 0.5em;
+  text-wrap: balance;
+}
+h1 { font-size: clamp(2.6rem, 7vw, 4.75rem); }
+h2 { font-size: clamp(2rem, 4.5vw, 3rem); }
+h3 { font-size: 1.5rem; }
+p { margin: 0 0 1em; }
+
+.wrap { max-width: var(--wrap); margin-inline: auto; padding-inline: var(--gap); }
+.section { padding-block: var(--space); }
+.section + .section { padding-top: 0; }
+.section--tint { background: var(--c-tint); }
+.section + .section--tint,
+.section--tint + .section { padding-top: var(--space); }
+.lead { font-size: 1.2rem; color: var(--c-muted); max-width: var(--measure); }
+.prose { max-width: var(--measure); }
+.prose > :last-child { margin-bottom: 0; }
+.prose ul, .prose ol { padding-left: 1.25em; }
+.prose li { margin-bottom: 0.35em; }
+
+/* Il segnavia: tre bande rosso-bianco-rosso, il segno dei sentieri alpini */
+.segnavia {
+  display: block;
+  width: 3.5rem;
+  height: 0.9rem;
+  background: linear-gradient(var(--c-accent) 0 34%, #fff 34% 66%, var(--c-accent) 66%);
+  margin-bottom: 1.25rem;
+}
+
+.button {
+  display: inline-block;
+  background: var(--c-accent);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.8em 1.4em;
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: background-color 0.15s;
+}
+.button:hover { background: color-mix(in srgb, var(--c-accent) 82%, #000); color: #fff; }
+.button--ghost { background: transparent; color: inherit; box-shadow: inset 0 0 0 2px currentColor; }
+.button--ghost:hover { background: rgb(255 255 255 / 0.12); color: inherit; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+.skip { position: absolute; left: -999px; top: 0.5rem; z-index: 99; }
+.skip:focus { left: 0.5rem; background: var(--c-paper); padding: 0.5rem 1rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}

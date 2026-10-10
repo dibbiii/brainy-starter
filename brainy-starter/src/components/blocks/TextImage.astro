@@ -1,0 +1,23 @@
+---
+import { md } from '../../lib/format';
+interface Props { title?: string; content: string; image: string; image_alt?: string; image_side?: 'left' | 'right'; id?: string }
+const { title, content, image, image_alt, image_side = 'right', id } = Astro.props;
+---
+<section class="section" id={id}>
+  <div class:list={['wrap', 'ti', { 'ti--left': image_side === 'left' }]}>
+    <div class="ti__text">
+      {title && <h2>{title}</h2>}
+      <div class="prose" set:html={md(content)} />
+    </div>
+    <img class="ti__img" src={image} alt={image_alt ?? ''} loading="lazy" />
+  </div>
+</section>
+
+<style>
+  .ti { display: grid; gap: var(--gap); align-items: center; }
+  .ti__img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius); }
+  @media (min-width: 48rem) {
+    .ti { grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 4.5rem); }
+    .ti--left .ti__img { order: -1; }
+  }
+</style>

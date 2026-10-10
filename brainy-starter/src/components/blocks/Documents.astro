@@ -1,0 +1,23 @@
+---
+interface Props { title?: string; files: { label: string; file: string }[]; id?: string }
+const { title, files, id } = Astro.props;
+const ext = (f: string) => f.split('.').pop()?.toUpperCase() ?? '';
+---
+<section class="section" id={id}>
+  <div class="wrap">
+    {title && <h2>{title}</h2>}
+    <ul class="docs">
+      {files.map((d) => (
+        <li><a href={d.file} download>{d.label}</a> <span class="docs__ext">{ext(d.file)}</span></li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .docs { list-style: none; padding: 0; margin: 1.5rem 0 0; max-width: var(--measure); }
+  .docs li { border-top: 1px solid var(--c-line); padding: 0.9rem 0; display: flex; justify-content: space-between; gap: 1rem; }
+  .docs li:last-child { border-bottom: 1px solid var(--c-line); }
+  .docs a { font-weight: 600; }
+  .docs__ext { color: var(--c-muted); font-size: 0.85rem; }
+</style>
