@@ -71,7 +71,7 @@ Se il blocco può servire ad altri clienti, aggiungilo **qui nella base**.
 5. Dal pannello, **Pagine**: componi home e pagine interne
 6. Cancella le news e le immagini di esempio in `public/uploads/`
 7. Scrivi l'informativa privacy reale (pagina `privacy`)
-8. Sostituisci `public/favicon.svg`
+8. La favicon (`src/pages/favicon.svg.ts`) usa già i colori scelti in *Aspetto*; modifica quel file solo se il cliente vuole un disegno diverso
 9. Deploy (vedi sotto) e crea gli account degli editor
 
 Se un cliente vuole un layout molto diverso, si modificano i componenti nel
