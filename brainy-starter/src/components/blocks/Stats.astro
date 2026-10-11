@@ -1,0 +1,43 @@
+---
+// Da 2 a 4 numeri con etichetta (es. 1947 · Anno di fondazione).
+// Due aspetti: "row" = un riquadro diviso da filetti, "cards" = schede separate.
+import { wrap, section } from '../../lib/ui';
+interface Props {
+  title?: string;
+  layout?: 'row' | 'cards';
+  items: { value: string; label: string }[];
+  id?: string;
+}
+const { title, layout = 'row', items, id } = Astro.props;
+const isRow = layout === 'row';
+---
+<section class={section} id={id}>
+  <div class={wrap}>
+    {title && <h2 class="mb-6">{title}</h2>}
+    {/*
+      Su schermi larghi le colonne sono tante quanti i numeri (--n).
+      "row": il contenitore è grigio e tra le celle resta 1px di spazio (gap-px),
+      che lascia vedere il grigio e diventa il filetto.
+    */}
+    <ul
+      class:list={[
+        'm-0 grid list-none grid-cols-2 p-0 md:grid-cols-[repeat(var(--n),minmax(0,1fr))]',
+        isRow ? 'gap-px overflow-hidden rounded-brand border border-line bg-line' : 'gap-4',
+      ]}
+      style={`--n:${items.length}`}
+    >
+      {items.map((item) => (
+        <li
+          class:list={[
+            // Su mobile, con 3 numeri l'ultimo occupa tutta la riga
+            'p-5 max-md:[&:last-child:nth-child(odd)]:col-span-2',
+            isRow ? 'bg-paper' : 'rounded-brand border border-line bg-paper',
+          ]}
+        >
+          <span class="block font-heading text-[clamp(1.75rem,4vw,2.5rem)] font-bold leading-none text-primary">{item.value}</span>
+          <span class="mt-2 block text-[0.95rem] text-muted">{item.label}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

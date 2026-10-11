@@ -36,7 +36,7 @@ e l'errore indica il campo.
 
 Ogni pagina è una lista di sezioni che l'editor aggiunge e riordina:
 copertina, testo, testo con immagine, schede (gare, corsi, discipline),
-team, sponsor, galleria, invito all'azione, documenti, ultime news,
+team, sponsor, galleria, invito all'azione, numeri, documenti, ultime news,
 video YouTube (con consenso), contatti.
 
 ### Aggiungere un nuovo blocco
@@ -46,6 +46,9 @@ video YouTube (con consenso), contatti.
    aggiungilo a `discriminatedUnion`
 3. `src/components/blocks/Nome.astro` → il componente
 4. `src/components/Blocks.astro` → registralo nella mappa
+
+Guida dettagliata, con un esempio completo e i controlli da fare:
+[`docs/aggiungere-un-blocco.md`](docs/aggiungere-un-blocco.md).
 
 Se il blocco può servire ad altri clienti, aggiungilo **qui nella base**.
 

@@ -167,6 +167,29 @@ collections:
               - { label: Testo pulsante, name: button_label, widget: string }
               - { label: Link pulsante, name: button_url, widget: string }
 
+          - label: Numeri
+            name: stats
+            widget: object
+            summary: "{{fields.title}}"
+            fields:
+              - { label: Titolo, name: title, widget: string, required: false }
+              - label: Aspetto
+                name: layout
+                widget: select
+                default: row
+                options:
+                  - { label: "In riga, divisi da filetti", value: row }
+                  - { label: "Schede separate", value: cards }
+              - label: Numeri
+                name: items
+                widget: list
+                min: 2
+                max: 4
+                summary: "{{fields.value}} — {{fields.label}}"
+                fields:
+                  - { label: Numero, name: value, widget: string, hint: "Anche con testo o zero iniziale. Es. 1947, 07, 120 km" }
+                  - { label: Descrizione, name: label, widget: string, hint: "Es. Anno di fondazione" }
+
           - label: Documenti da scaricare
             name: documents
             widget: object

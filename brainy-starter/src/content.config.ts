@@ -70,9 +70,15 @@ const documents = z.object({
 const latestNews = z.object({ type: z.literal('latest_news'), title: optStr, count: z.number().default(3) });
 const video = z.object({ type: z.literal('video'), title: optStr, url: z.string() });
 const contacts = z.object({ type: z.literal('contacts'), title: optStr, intro: optStr });
+const stats = z.object({
+  type: z.literal('stats'),
+  title: optStr,
+  layout: z.enum(['row', 'cards']).default('row'),
+  items: z.array(z.object({ value: z.string(), label: z.string() })).min(2).max(4),
+});
 
 export const section = z.discriminatedUnion('type', [
-  hero, text, textImage, cards, team, sponsors, gallery, cta, documents, latestNews, video, contacts,
+  hero, text, textImage, cards, team, sponsors, gallery, cta, stats, documents, latestNews, video, contacts,
 ]);
 export type Section = z.infer<typeof section>;
 
