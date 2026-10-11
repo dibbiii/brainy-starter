@@ -51,10 +51,10 @@ const topLink = 'block py-[0.6rem] text-ink no-underline font-semibold hover:tex
 </header>
 
 <script>
-  // Su desktop il <details> deve risultare sempre aperto
+  // Su desktop il <details> deve risultare sempre aperto; passando a mobile si richiude
   const nav = document.querySelector<HTMLDetailsElement>('[data-nav]');
   const mq = window.matchMedia('(min-width: 52.01rem)');
-  const sync = () => { if (nav && mq.matches) nav.open = true; };
+  const sync = () => { if (nav) nav.open = mq.matches; };
   sync();
   mq.addEventListener('change', sync);
 </script>
