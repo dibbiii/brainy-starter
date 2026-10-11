@@ -69,6 +69,8 @@ collections:
       - { label: Titolo, name: title, widget: string }
       - { label: Descrizione per Google, name: description, widget: text, required: false }
       - { label: Mostra il titolo in cima alla pagina, name: show_title, widget: boolean, default: true, required: false }
+      - { label: Immagine in cima alla pagina, name: header_image, widget: image, required: false, hint: "Si vede solo se nelle Impostazioni l'intestazione è «Fascia con briciole di pane»" }
+      - { label: Testo alternativo immagine in cima, name: header_image_alt, widget: string, required: false, hint: "Descrivi l'immagine per chi non la vede" }
       - label: Sezioni
         name: sections
         widget: list
@@ -222,6 +224,15 @@ collections:
           - { label: Sottotitolo nell'intestazione, name: header_subtitle, widget: string, required: false, hint: "Riga piccola sotto il nome. Es. ASD · Ziano di Fiemme" }
           - { label: Pulsante in evidenza — testo, name: header_button_label, widget: string, required: false, hint: "Es. Tesseramento. Compare solo se compili anche il link" }
           - { label: Pulsante in evidenza — link, name: header_button_url, widget: string, required: false }
+          - label: Intestazione delle pagine interne
+            name: page_header_style
+            widget: select
+            required: false
+            default: simple
+            hint: "Vale per tutte le pagine tranne la home. La fascia mostra briciole di pane, titolo, descrizione e, se caricata, un'immagine."
+            options:
+              - { label: "Semplice (solo il titolo)", value: simple }
+              - { label: "Fascia con briciole di pane e descrizione", value: band }
           - { label: Immagine per condivisioni social, name: og_image, widget: image, required: false }
           - { label: Email, name: email, widget: string, required: false }
           - { label: Telefono, name: phone, widget: string, required: false }

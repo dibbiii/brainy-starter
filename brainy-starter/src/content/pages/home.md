@@ -1,6 +1,7 @@
 ---
 title: Home
-description: Associazione sportiva in Val di Fiemme. Corsi di sci, corsa in montagna e orienteering per bambini e adulti.
+description: Associazione sportiva in Val di Fiemme. Corsi di sci, corsa in
+  montagna e orienteering per bambini e adulti.
 show_title: false
 sections:
   - type: hero

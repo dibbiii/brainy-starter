@@ -82,6 +82,8 @@ const pages = defineCollection({
     title: z.string(),
     description: optStr,
     show_title: z.boolean().nullish().default(true),
+    header_image: optStr,
+    header_image_alt: optStr,
     sections: z.array(section).nullish().default([]),
   }),
 });

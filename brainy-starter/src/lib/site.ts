@@ -15,6 +15,7 @@ export interface Site {
   header_subtitle?: string;
   header_button_label?: string;
   header_button_url?: string;
+  page_header_style?: 'simple' | 'band';
   og_image?: string;
   email?: string;
   phone?: string;

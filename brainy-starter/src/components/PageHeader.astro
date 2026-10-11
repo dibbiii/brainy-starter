@@ -1,0 +1,60 @@
+---
+// Intestazione delle pagine interne. Due stili, scelti in Impostazioni → Dati del sito:
+//  - simple: segnavia e titolo
+//  - band:   fascia colorata con briciole di pane, titolo, descrizione e immagine
+import { site } from '../lib/site';
+import { breadcrumbs, type Crumb } from '../lib/breadcrumbs';
+import { wrap, segnavia } from '../lib/ui';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+  crumbs?: Crumb[];
+  variant?: 'simple' | 'band';
+}
+const {
+  title,
+  description,
+  image,
+  imageAlt = '',
+  crumbs = breadcrumbs(Astro.url.pathname, title),
+  variant = site.page_header_style ?? 'simple',
+} = Astro.props;
+const last = crumbs.length - 1;
+---
+{variant === 'band' ? (
+  <header class="bg-primary text-paper">
+    <div class:list={[wrap, 'grid items-center gap-8 py-[clamp(2rem,5vw,3.5rem)] md:grid-cols-[1fr_auto]']}>
+      <div>
+        <nav aria-label="Briciole di pane" class="mb-4 text-[0.9rem]">
+          <ol class="m-0 flex list-none flex-wrap items-center gap-x-2 gap-y-1 p-0">
+            {crumbs.map((crumb, i) => (
+              <li class="flex items-center gap-2">
+                {crumb.url && i < last
+                  ? <a class="text-paper/80 no-underline hover:text-paper hover:underline" href={crumb.url}>{crumb.label}</a>
+                  : <span aria-current={i === last ? 'page' : undefined}>{crumb.label}</span>}
+                {i < last && <span aria-hidden="true" class="opacity-60">›</span>}
+              </li>
+            ))}
+          </ol>
+        </nav>
+        <h1 class="m-0 text-[clamp(2.2rem,5vw,3.5rem)]">{title}</h1>
+        {description && <p class="mb-0 mt-3 max-w-measure text-[1.1rem] text-paper/90">{description}</p>}
+      </div>
+      {image && (
+        <img
+          class="aspect-video w-full max-w-sm rounded-brand border-4 border-paper object-cover shadow-lg md:w-[22rem] md:max-w-none"
+          src={image}
+          alt={imageAlt}
+        />
+      )}
+    </div>
+  </header>
+) : (
+  <header class:list={[wrap, 'pt-[clamp(2.5rem,7vw,5rem)] [&+.section]:pt-[clamp(1.5rem,4vw,2.5rem)]']}>
+    <span class={segnavia} aria-hidden="true"></span>
+    <h1 class="m-0">{title}</h1>
+  </header>
+)}
