@@ -76,9 +76,15 @@ const stats = z.object({
   layout: z.enum(['row', 'cards']).default('row'),
   items: z.array(z.object({ value: z.string(), label: z.string() })).min(2).max(4),
 });
+const timeline = z.object({
+  type: z.literal('timeline'),
+  title: optStr,
+  start: z.string(),
+  end: z.string(),
+});
 
 export const section = z.discriminatedUnion('type', [
-  hero, text, textImage, cards, team, sponsors, gallery, cta, stats, documents, latestNews, video, contacts,
+  hero, text, textImage, cards, team, sponsors, gallery, cta, stats, timeline, documents, latestNews, video, contacts,
 ]);
 export type Section = z.infer<typeof section>;
 

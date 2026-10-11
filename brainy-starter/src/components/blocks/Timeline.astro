@@ -1,0 +1,18 @@
+---
+// Un periodo con inizio e fine (es. mandato del direttivo: 19.04.2024 → primavera 2028).
+// Le due etichette sono testo libero: non serve una data precisa.
+import { wrap, section } from '../../lib/ui';
+interface Props { title?: string; start: string; end: string; id?: string }
+const { title, start, end, id } = Astro.props;
+---
+<section class={section} id={id}>
+  <div class={wrap}>
+    {title && <h2 class="mb-6">{title}</h2>}
+    <div class="flex items-center gap-4">
+      <span class="rounded-full bg-tint px-4 py-1 text-center text-[0.85rem] font-semibold text-primary"><span class="sr-only">Inizio: </span>{start}</span>
+      {/* La linea è solo decorativa: si allunga per occupare lo spazio tra le due etichette */}
+      <span class="h-0.5 min-w-6 flex-1 bg-primary" aria-hidden="true"></span>
+      <span class="rounded-full border border-line bg-paper px-4 py-1 text-center text-[0.85rem] font-semibold text-primary"><span class="sr-only">Fine: </span>{end}</span>
+    </div>
+  </div>
+</section>

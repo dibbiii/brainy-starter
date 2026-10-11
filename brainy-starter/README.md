@@ -36,7 +36,7 @@ e l'errore indica il campo.
 
 Ogni pagina è una lista di sezioni che l'editor aggiunge e riordina:
 copertina, testo, testo con immagine, schede (gare, corsi, discipline),
-team, sponsor, galleria, invito all'azione, numeri, documenti, ultime news,
+team, sponsor, galleria, invito all'azione, numeri, periodo (linea del tempo), documenti, ultime news,
 video YouTube (con consenso), contatti.
 
 ### Aggiungere un nuovo blocco

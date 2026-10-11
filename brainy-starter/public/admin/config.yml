@@ -190,6 +190,15 @@ collections:
                   - { label: Numero, name: value, widget: string, hint: "Anche con testo o zero iniziale. Es. 1947, 07, 120 km" }
                   - { label: Descrizione, name: label, widget: string, hint: "Es. Anno di fondazione" }
 
+          - label: Periodo (linea del tempo)
+            name: timeline
+            widget: object
+            summary: "{{fields.start}} → {{fields.end}}"
+            fields:
+              - { label: Titolo, name: title, widget: string, required: false }
+              - { label: Dal, name: start, widget: string, hint: "Es. 19.04.2024" }
+              - { label: Al, name: end, widget: string, hint: "Testo libero, non serve una data precisa. Es. primavera 2028" }
+
           - label: Documenti da scaricare
             name: documents
             widget: object

@@ -11,6 +11,7 @@ import Sponsors from './blocks/Sponsors.astro';
 import Gallery from './blocks/Gallery.astro';
 import Cta from './blocks/Cta.astro';
 import Stats from './blocks/Stats.astro';
+import Timeline from './blocks/Timeline.astro';
 import Documents from './blocks/Documents.astro';
 import LatestNews from './blocks/LatestNews.astro';
 import Video from './blocks/Video.astro';
@@ -21,7 +22,7 @@ const { sections } = Astro.props;
 
 const map = {
   hero: Hero, text: Text, text_image: TextImage, cards: Cards, team: Team,
-  sponsors: Sponsors, gallery: Gallery, cta: Cta, stats: Stats, documents: Documents,
+  sponsors: Sponsors, gallery: Gallery, cta: Cta, stats: Stats, timeline: Timeline, documents: Documents,
   latest_news: LatestNews, video: Video, contacts: Contacts,
 } as const;
 
