@@ -1,7 +1,9 @@
 ---
 // Il menu mobile usa <details>: funziona senza JavaScript.
-import { menu, site } from '../lib/site';
+import { site } from '../lib/site';
+import { resolvedMenu } from '../lib/menu';
 import { wrap, button, buttonPadSm } from '../lib/ui';
+const menu = await resolvedMenu();
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isActive = (url?: string) => {
   if (!url) return false;

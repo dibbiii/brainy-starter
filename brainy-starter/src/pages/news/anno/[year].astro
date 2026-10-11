@@ -1,0 +1,17 @@
+---
+// Le news di un anno: /news/anno/2025
+import NewsList from '../../../components/NewsList.astro';
+import { publishedNews, yearOf, yearsOf } from '../../../lib/news';
+
+export async function getStaticPaths() {
+  const all = await publishedNews();
+  const years = yearsOf(all);
+  if (years.length < 2) return []; // con un solo anno sarebbe un doppione di /news
+  return years.map((y) => ({
+    params: { year: String(y) },
+    props: { posts: all.filter((p) => yearOf(p) === y), years, year: y },
+  }));
+}
+const { posts, years, year } = Astro.props;
+---
+<NewsList posts={posts} current={1} last={1} years={years} year={year} />

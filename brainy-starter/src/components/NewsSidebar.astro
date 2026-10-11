@@ -1,0 +1,39 @@
+---
+// Colonna laterale della pagina di una news: le altre news e, se impostato, un riquadro
+// in evidenza (Impostazioni → Dati del sito → "News: riquadro nella colonna").
+import { publishedNews } from '../lib/news';
+import { site } from '../lib/site';
+import { formatDate, isExternal } from '../lib/format';
+import { button, buttonPadSm } from '../lib/ui';
+interface Props { currentId: string }
+const { currentId } = Astro.props;
+const others = (await publishedNews()).filter((p) => p.id !== currentId).slice(0, 4);
+const hasButton = Boolean(site.news_box_button_label && site.news_box_button_url);
+---
+<aside class="grid content-start gap-6" aria-label="Altre news">
+  {others.length > 0 && (
+    <section class="rounded-brand border border-line bg-paper p-5">
+      <h2 class="mb-4 text-[1.4rem]">Altre news</h2>
+      <ul class="m-0 grid list-none gap-4 p-0">
+        {others.map((p) => (
+          <li class="group relative flex gap-3">
+            {p.data.cover && <img class="size-16 shrink-0 rounded-brand bg-line object-cover" src={p.data.cover} alt="" loading="lazy" />}
+            <div>
+              <time class="block text-[0.8rem] text-muted" datetime={p.data.date.toISOString()}>{formatDate(p.data.date)}</time>
+              <a class="font-semibold text-ink no-underline after:absolute after:inset-0 after:content-[''] group-hover:text-accent" href={`/news/${p.id}`}>{p.data.title}</a>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+  {site.news_box_title && (
+    <section class="rounded-brand bg-tint p-5">
+      <h2 class="mb-2 text-[1.4rem]">{site.news_box_title}</h2>
+      {site.news_box_text && <p>{site.news_box_text}</p>}
+      {hasButton && (
+        <a class:list={[button, buttonPadSm]} href={site.news_box_button_url} rel={isExternal(site.news_box_button_url) ? 'noopener' : undefined}>{site.news_box_button_label}</a>
+      )}
+    </section>
+  )}
+</aside>

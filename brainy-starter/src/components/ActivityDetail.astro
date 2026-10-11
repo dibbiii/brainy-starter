@@ -1,0 +1,44 @@
+---
+// Pagina di una singola attività (disciplina, gara, corso…):
+// intestazione, responsabili, sezioni composte nel pannello e "Altre attività".
+import Base from '../layouts/Base.astro';
+import Blocks from './Blocks.astro';
+import PageHeader from './PageHeader.astro';
+import ActivityNews from './ActivityNews.astro';
+import OtherActivities from './OtherActivities.astro';
+import ShareLinks from './ShareLinks.astro';
+import { site } from '../lib/site';
+import { membersById } from '../lib/team';
+import { activitiesLabel, activitiesIndexUrl, indexPageExists, type Activity } from '../lib/activities';
+import { wrap, lead } from '../lib/ui';
+
+interface Props { activity: Activity }
+const { activity } = Astro.props;
+const { title, description, image, image_alt, managers, sections } = activity.data;
+
+const people = await membersById(managers, `attività "${title}"`);
+const names = new Intl.ListFormat('it', { style: 'long', type: 'conjunction' }).format(people.map((p) => p.data.name));
+const crumbs = [
+  { label: 'Home', url: '/' },
+  { label: activitiesLabel, url: (await indexPageExists()) ? activitiesIndexUrl : undefined },
+  { label: title },
+];
+// Nello stile "semplice" l'intestazione mostra solo il titolo: descrizione e immagine vanno sotto
+const band = site.page_header_style === 'band';
+---
+<Base title={title} description={description} image={image}>
+  <PageHeader title={title} description={description} image={image} imageAlt={image_alt} crumbs={crumbs} />
+  {(people.length > 0 || (!band && (description || image))) && (
+    <div class:list={[wrap, 'pt-8']}>
+      {!band && description && <p class:list={[lead, 'mt-0']}>{description}</p>}
+      {!band && image && <img class="mb-6 aspect-video w-full max-w-xl rounded-brand object-cover" src={image} alt={image_alt ?? ''} />}
+      {people.length > 0 && (
+        <p class="m-0 text-muted">{people.length > 1 ? 'Responsabili' : 'Responsabile'}: <strong class="text-ink">{names}</strong></p>
+      )}
+    </div>
+  )}
+  <Blocks sections={sections ?? []} />
+  {site.show_share_links && <div class={wrap}><ShareLinks title={title} /></div>}
+  <ActivityNews activityId={activity.id} />
+  <OtherActivities currentId={activity.id} />
+</Base>

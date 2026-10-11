@@ -4,6 +4,7 @@
 //  - band:   fascia colorata con briciole di pane, titolo, descrizione e immagine
 import { site } from '../lib/site';
 import { breadcrumbs, type Crumb } from '../lib/breadcrumbs';
+import PageHeaderDecor from '../brand/PageHeaderDecor.astro';
 import { wrap, segnavia } from '../lib/ui';
 
 interface Props {
@@ -25,8 +26,9 @@ const {
 const last = crumbs.length - 1;
 ---
 {variant === 'band' ? (
-  <header class="bg-primary text-paper">
-    <div class:list={[wrap, 'grid items-center gap-8 py-[clamp(2rem,5vw,3.5rem)] md:grid-cols-[1fr_auto]']}>
+  <header class="relative overflow-hidden bg-primary text-paper">
+    <PageHeaderDecor />
+    <div class:list={[wrap, 'relative grid items-center gap-8 py-[clamp(2rem,5vw,3.5rem)] md:grid-cols-[1fr_auto]']}>
       <div>
         <nav aria-label="Briciole di pane" class="mb-4 text-[0.9rem]">
           <ol class="m-0 flex list-none flex-wrap items-center gap-x-2 gap-y-1 p-0">

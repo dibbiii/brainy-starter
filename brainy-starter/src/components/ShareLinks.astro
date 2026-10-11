@@ -1,0 +1,15 @@
+---
+// Condividi su X e Facebook. Sono semplici link: nessuno script e nessuna richiesta
+// a terzi finché il visitatore non clicca (nessun cookie, nessun tracciamento).
+interface Props { title: string }
+const { title } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const x = `https://x.com/intent/post?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
+const facebook = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+const link = 'rounded-brand border-2 border-primary px-3 py-1 text-[0.9rem] font-semibold no-underline hover:bg-primary hover:text-paper';
+---
+<p class="mt-10 flex flex-wrap items-center gap-2 text-[0.95rem] text-muted">
+  <span>Condividi:</span>
+  <a class={link} href={x} target="_blank" rel="noopener noreferrer" aria-label="Condividi su X (si apre in una nuova scheda)">X</a>
+  <a class={link} href={facebook} target="_blank" rel="noopener noreferrer" aria-label="Condividi su Facebook (si apre in una nuova scheda)">Facebook</a>
+</p>

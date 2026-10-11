@@ -1,0 +1,22 @@
+---
+// Le news collegate a un'attività (campo "Attività collegata" della news).
+import { publishedNews } from '../lib/news';
+import NewsCard from './NewsCard.astro';
+import { wrap, section } from '../lib/ui';
+interface Props { activityId: string; limit?: number }
+const { activityId, limit = 6 } = Astro.props;
+const posts = (await publishedNews()).filter((p) => p.data.activity === activityId).slice(0, limit);
+---
+{posts.length > 0 && (
+  <section class={section}>
+    <div class={wrap}>
+      <div class="flex flex-wrap items-baseline justify-between gap-4">
+        <h2 class="mb-0">News</h2>
+        <a class="font-semibold" href="/news">Tutte le news</a>
+      </div>
+      <div class="mt-6 grid grid-cols-[repeat(auto-fit,minmax(16rem,1fr))] gap-x-gutter gap-y-10">
+        {posts.map((post) => <NewsCard post={post} />)}
+      </div>
+    </div>
+  </section>
+)}

@@ -1,0 +1,33 @@
+---
+// In fondo a una pagina del sottomenu: le altre pagine della stessa sezione.
+// Si ricava dal menu (Impostazioni → Menu) e si attiva in Impostazioni → Dati del sito.
+// Le voci del sottomenu che puntano a un punto della pagina (con #) non sono pagine: si saltano.
+import { menu, site } from '../lib/site';
+import { wrap, sectionTint } from '../lib/ui';
+interface Props { path: string }
+const { path } = Astro.props;
+const clean = (u: string) => u.split('#')[0].replace(/\/$/, '') || '/';
+const here = clean(path);
+const pagesOf = (item: (typeof menu)[number]) => (item.children ?? []).filter((c) => !c.url.includes('#'));
+
+// La sezione è la voce di menu che ha tra i figli la pagina corrente (o che è la pagina corrente)
+const group = menu.find((item) => pagesOf(item).some((c) => clean(c.url) === here) || (item.url && clean(item.url) === here && pagesOf(item).length > 0));
+const links = group ? pagesOf(group).filter((c) => clean(c.url) !== here) : [];
+---
+{site.show_section_nav && group && links.length > 0 && (
+  <section class={sectionTint}>
+    <div class={wrap}>
+      <h2 class="text-[1.85rem]">{group.label}</h2>
+      <ul class="m-0 mt-6 grid list-none grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-3 p-0">
+        {links.map((l) => (
+          <li>
+            <a class="flex items-center justify-between gap-3 rounded-brand border border-line bg-paper px-4 py-3 font-semibold text-ink no-underline hover:border-primary hover:text-ink" href={l.url}>
+              <span>{l.label}</span>
+              <span class="text-accent" aria-hidden="true">→</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}

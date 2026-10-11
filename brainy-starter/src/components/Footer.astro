@@ -2,13 +2,26 @@
 import { site, sponsors, sponsorsInFooter } from '../lib/site';
 import { wrap, segnavia } from '../lib/ui';
 import SponsorList from './SponsorList.astro';
+import { allActivities, activityUrl } from '../lib/activities';
+import FooterDecor from '../brand/FooterDecor.astro';
 interface Props { hideSponsors?: boolean }
 const { hideSponsors = false } = Astro.props;
 const year = new Date().getFullYear();
 
+// Colonne di link: si mostrano solo quelle con titolo e almeno un link.
+// Una colonna può avere anche l'elenco delle attività (aggiunto in automatico, dopo i link a mano)
+const activities = (site.footer_columns ?? []).some((c) => c.from_activities)
+  ? (await allActivities()).map((a) => ({ label: a.data.title, url: activityUrl(a) }))
+  : [];
+const columns = (site.footer_columns ?? [])
+  .map((c) => ({ title: c.title, links: [...(c.links ?? []), ...(c.from_activities ? activities : [])] }))
+  .filter((c) => c.title && c.links.length);
+const isExternal = (url: string) => /^https?:\/\//.test(url);
+
 // I link del footer sono bianchi (il fondo è il colore primario)
 const onDark = '[&_a]:text-paper [&_a:hover]:text-paper [&_a:hover]:decoration-2';
 ---
+<FooterDecor />
 <footer class="bg-primary text-paper">
   {!hideSponsors && sponsorsInFooter && sponsors.length > 0 && (
     <div class="bg-paper text-ink py-10 border-t border-line">
@@ -17,8 +30,14 @@ const onDark = '[&_a]:text-paper [&_a:hover]:text-paper [&_a:hover]:decoration-2
   )}
   <div class:list={[wrap, onDark, 'grid gap-8 grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] pt-14 pb-10']}>
     <div>
-      <span class={segnavia} aria-hidden="true"></span>
-      <p class="font-heading text-[2rem] font-bold leading-none mb-2">{site.name}</p>
+      {site.footer_logo ? (
+        <img class="h-14 w-auto mb-4" src={site.footer_logo} alt={site.name} />
+      ) : (
+        <>
+          <p class="font-heading text-[2rem] font-bold leading-none mb-2">{site.name}</p>
+          <span class={segnavia} aria-hidden="true"></span>
+        </>
+      )}
       {site.tagline && <p>{site.tagline}</p>}
       {site.footer_note && <p class="opacity-80 text-[0.95rem]">{site.footer_note}</p>}
     </div>
@@ -37,6 +56,20 @@ const onDark = '[&_a]:text-paper [&_a:hover]:text-paper [&_a:hover]:decoration-2
       </div>
     )}
   </div>
+  {columns.length > 0 && (
+    <div class:list={[wrap, onDark, 'grid gap-8 grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] border-t border-paper/20 py-8']}>
+      {columns.map((col) => (
+        <nav aria-label={col.title}>
+          <h2 class="text-[1.35rem] mb-3">{col.title}</h2>
+          <ul>
+            {col.links.map((l) => (
+              <li class="mb-[0.4rem]"><a href={l.url} rel={isExternal(l.url) ? 'noopener' : undefined}>{l.label}</a></li>
+            ))}
+          </ul>
+        </nav>
+      ))}
+    </div>
+  )}
   <div class:list={[wrap, onDark, 'flex flex-wrap gap-x-6 gap-y-2 border-t border-paper/20 pt-5 pb-8 text-[0.9rem] opacity-85 sm:[&>span:last-child]:ml-auto']}>
     <span>© {year} {site.name}{site.tax_id && ` · ${site.tax_id}`}</span>
     {site.privacy_url && <a href={site.privacy_url}>Informativa privacy</a>}

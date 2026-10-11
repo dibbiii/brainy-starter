@@ -1,23 +1,33 @@
 ---
 // Niente modulo di contatto di default: un form richiede un servizio esterno
 // che tratta dati personali (vedi README, sezione GDPR).
+// Immagine facoltativa a lato (es. il codice QR del gruppo WhatsApp), con didascalia.
 import { site } from '../../lib/site';
 import { wrap, section, lead } from '../../lib/ui';
-interface Props { title?: string; intro?: string; id?: string }
-const { title, intro, id } = Astro.props;
+interface Props { title?: string; intro?: string; image?: string; image_alt?: string; image_caption?: string; id?: string }
+const { title, intro, image, image_alt, image_caption, id } = Astro.props;
 
 const item = 'border-t-[3px] border-ink pt-[0.9rem]';
 const label = 'text-muted text-[0.95rem]';
 const value = 'mt-1 text-[1.3rem] font-semibold';
+const grid = 'grid gap-x-gutter gap-y-8 grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] mt-8';
 ---
 <section class={section} id={id}>
   <div class={wrap}>
     {title && <h2>{title}</h2>}
     {intro && <p class={lead}>{intro}</p>}
-    <dl class="grid gap-x-gutter gap-y-8 grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] mt-8">
-      {site.email && <div class={item}><dt class={label}>Email</dt><dd class={value}><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>}
-      {site.phone && <div class={item}><dt class={label}>Telefono</dt><dd class={value}><a href={`tel:${site.phone.replace(/\s/g, '')}`}>{site.phone}</a></dd></div>}
-      {site.address && <div class={item}><dt class={label}>Indirizzo</dt><dd class={value} set:html={site.address.replace(/\n/g, '<br>')} /></div>}
-    </dl>
+    <div class:list={[image && 'mt-8 grid items-start gap-10 md:grid-cols-[1fr_16rem]']}>
+      <dl class:list={[grid, image && 'mt-0']}>
+        {site.email && <div class={item}><dt class={label}>Email</dt><dd class={value}><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>}
+        {site.phone && <div class={item}><dt class={label}>Telefono</dt><dd class={value}><a href={`tel:${site.phone.replace(/\s/g, '')}`}>{site.phone}</a></dd></div>}
+        {site.address && <div class={item}><dt class={label}>Indirizzo</dt><dd class={value} set:html={site.address.replace(/\n/g, '<br>')} /></div>}
+      </dl>
+      {image && (
+        <figure class="m-0 rounded-brand border border-line bg-paper p-4 text-center">
+          <img class="mx-auto w-full max-w-48" src={image} alt={image_alt ?? ''} loading="lazy" />
+          {image_caption && <figcaption class="mt-3 text-[0.9rem] text-muted">{image_caption}</figcaption>}
+        </figure>
+      )}
+    </div>
   </div>
 </section>

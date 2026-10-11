@@ -1,15 +1,16 @@
 ---
 import NewsList from '../../../components/NewsList.astro';
-import { publishedNews, PER_PAGE } from '../../../lib/news';
+import { publishedNews, yearsOf, PER_PAGE } from '../../../lib/news';
 
 export async function getStaticPaths() {
   const all = await publishedNews();
   const last = Math.ceil(all.length / PER_PAGE);
+  const years = yearsOf(all);
   return Array.from({ length: Math.max(0, last - 1) }, (_, i) => {
     const n = i + 2;
-    return { params: { page: String(n) }, props: { posts: all.slice((n - 1) * PER_PAGE, n * PER_PAGE), current: n, last } };
+    return { params: { page: String(n) }, props: { posts: all.slice((n - 1) * PER_PAGE, n * PER_PAGE), current: n, last, years } };
   });
 }
-const { posts, current, last } = Astro.props;
+const { posts, current, last, years } = Astro.props;
 ---
-<NewsList posts={posts} current={current} last={last} />
+<NewsList posts={posts} current={current} last={last} years={years} />

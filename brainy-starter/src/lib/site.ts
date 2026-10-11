@@ -3,7 +3,6 @@
 import siteData from '../data/site.json';
 import themeData from '../data/theme.json';
 import menuData from '../data/menu.json';
-import teamData from '../data/team.json';
 import sponsorsData from '../data/sponsors.json';
 
 export interface Site {
@@ -24,9 +23,27 @@ export interface Site {
   socials?: { platform: string; url: string }[];
   privacy_url?: string;
   footer_note?: string;
+  footer_logo?: string;
+  activities_label?: string;
+  activities_path?: string;
+  activities_more_title?: string;
+  activities_all_label?: string;
+  show_section_nav?: boolean;
+  show_share_links?: boolean;
+  news_featured?: boolean;
+  news_sidebar?: boolean;
+  news_box_title?: string;
+  news_box_text?: string;
+  news_box_button_label?: string;
+  news_box_button_url?: string;
+  footer_columns?: { title: string; links?: { label: string; url: string }[]; from_activities?: boolean }[];
 }
-export interface MenuItem { label: string; url?: string; children?: { label: string; url: string }[] }
-export interface Person { name: string; role: string; photo?: string; bio?: string; email?: string }
+export interface MenuItem {
+  label: string;
+  url?: string;
+  children?: { label: string; url: string }[];
+  activities_submenu?: boolean;
+}
 export interface Sponsor { name: string; logo?: string; url?: string; tier: 'main' | 'partner' | 'institutional' }
 
 export const site = siteData as Site;
@@ -35,7 +52,6 @@ export const theme = themeData as {
   heading_font: string; body_font: string; corners: string;
 };
 export const menu = ((menuData as { items?: MenuItem[] }).items ?? []);
-export const team = ((teamData as { people?: Person[] }).people ?? []);
 export const sponsors = ((sponsorsData as { items?: Sponsor[] }).items ?? []);
 export const sponsorsInFooter = (sponsorsData as { show_in_footer?: boolean }).show_in_footer !== false;
 
@@ -44,6 +60,7 @@ const fonts: Record<string, string> = {
   barlow: "'Barlow Condensed', 'Arial Narrow', sans-serif",
   archivo: "'Archivo Variable', 'Helvetica Neue', Arial, sans-serif",
   fraunces: "'Fraunces Variable', Georgia, serif",
+  source_serif: "'Source Serif 4 Variable', Georgia, serif",
   source: "'Source Sans 3 Variable', 'Segoe UI', Roboto, sans-serif",
   atkinson: "'Atkinson Hyperlegible', 'Segoe UI', Verdana, sans-serif",
   lora: "'Lora Variable', Georgia, serif",

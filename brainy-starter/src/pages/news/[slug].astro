@@ -1,9 +1,13 @@
 ---
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import NewsArticleBody from '../../components/NewsArticleBody.astro';
+import NewsSidebar from '../../components/NewsSidebar.astro';
+import { site } from '../../lib/site';
 import { formatDate } from '../../lib/format';
 import { publishedNews } from '../../lib/news';
-import { wrap, lead, prose } from '../../lib/ui';
+import { wrap } from '../../lib/ui';
 
 export async function getStaticPaths() {
   const posts = await publishedNews();
@@ -11,24 +15,22 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { title, date, excerpt, cover, cover_alt, attachments } = post.data;
+const { title, date, excerpt, cover } = post.data;
 const { Content } = await render(post);
+
+const band = site.page_header_style === 'band';
+const sidebar = Boolean(site.news_sidebar);
+const crumbs = [{ label: 'Home', url: '/' }, { label: 'News', url: '/news' }, { label: title }];
+const space = 'py-[clamp(2.5rem,7vw,5rem)]';
 ---
 <Base title={title} description={excerpt} image={cover}>
-  <article class:list={[wrap, 'py-[clamp(2.5rem,7vw,5rem)]']}>
-    <header class="max-w-measure">
-      <a class="inline-block mb-6 font-semibold" href="/news">Tutte le news</a>
-      <time class="block text-muted mb-2" datetime={date.toISOString()}>{formatDate(date)}</time>
-      <h1>{title}</h1>
-      {excerpt && <p class={lead}>{excerpt}</p>}
-    </header>
-    {cover && <img class="w-full max-h-[36rem] object-contain object-left mt-8 mb-10 rounded-brand" src={cover} alt={cover_alt ?? ''} />}
-    <div class={prose}><Content /></div>
-    {attachments && attachments.length > 0 && (
-      <aside class="max-w-measure mt-12 border-t-[3px] border-ink pt-4">
-        <h2 class="text-[1.6rem]">Allegati</h2>
-        <ul class="list-disc pl-[1.2em]">{attachments.map((a) => <li><a href={a.file} download>{a.label}</a></li>)}</ul>
-      </aside>
-    )}
-  </article>
+  {band && <PageHeader title={title} description={formatDate(date)} crumbs={crumbs} />}
+  {sidebar ? (
+    <div class:list={[wrap, space, 'grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem]']}>
+      <article class="min-w-0"><NewsArticleBody post={post} Content={Content} band={band} /></article>
+      <NewsSidebar currentId={post.id} />
+    </div>
+  ) : (
+    <article class:list={[wrap, space]}><NewsArticleBody post={post} Content={Content} band={band} /></article>
+  )}
 </Base>

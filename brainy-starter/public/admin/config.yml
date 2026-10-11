@@ -50,6 +50,15 @@ collections:
         fields:
           - { label: Nome del file, name: label, widget: string }
           - { label: File, name: file, widget: file }
+      - label: Attività collegata
+        name: activity
+        widget: relation
+        collection: activities
+        search_fields: [title]
+        value_field: "{{slug}}"
+        display_fields: [title]
+        required: false
+        hint: "Facoltativo: la news comparirà anche nella pagina di quell'attività"
       - { label: Bozza (non pubblicare), name: draft, widget: boolean, default: false, required: false }
       - { label: Testo, name: body, widget: markdown }
 
@@ -69,9 +78,13 @@ collections:
       - { label: Titolo, name: title, widget: string }
       - { label: Descrizione per Google, name: description, widget: text, required: false }
       - { label: Mostra il titolo in cima alla pagina, name: show_title, widget: boolean, default: true, required: false }
+      - { label: Pulsanti di condivisione, name: show_share, widget: boolean, default: false, required: false, hint: "Mostra in fondo i link per condividere la pagina su X e Facebook" }
       - { label: Immagine in cima alla pagina, name: header_image, widget: image, required: false, hint: "Si vede solo se nelle Impostazioni l'intestazione è «Fascia con briciole di pane»" }
       - { label: Testo alternativo immagine in cima, name: header_image_alt, widget: string, required: false, hint: "Descrivi l'immagine per chi non la vede" }
-      - label: Sezioni
+      # &sections_field: l'elenco dei blocchi è definito qui una volta sola
+      # e riusato dalle Attività con *sections_field
+      - &sections_field
+        label: Sezioni
         name: sections
         widget: list
         required: false
@@ -126,6 +139,17 @@ collections:
                   - { label: Immagine, name: image, widget: image, required: false }
                   - { label: Link, name: url, widget: string, required: false }
 
+          - label: Elenco delle attività (discipline, gare, corsi…)
+            name: activities
+            widget: object
+            summary: "{{fields.title}}"
+            fields:
+              - { label: Titolo, name: title, widget: string, required: false }
+              - { label: Introduzione, name: intro, widget: text, required: false }
+              - { label: Testo del link a destra del titolo, name: link_label, widget: string, required: false, hint: "Es. I responsabili di settore. Compare solo se compili anche il link" }
+              - { label: Indirizzo del link, name: link_url, widget: string, required: false }
+              - { label: Mostra i responsabili, name: show_managers, widget: boolean, default: true, required: false }
+
           - label: Team
             name: team
             widget: object
@@ -134,6 +158,15 @@ collections:
               - { label: Titolo, name: title, widget: string, required: false }
               - { label: Introduzione, name: intro, widget: text, required: false }
               - { label: Quante persone mostrare (0 = tutte), name: limit, widget: number, value_type: int, default: 0, min: 0 }
+              - label: Aspetto
+                name: layout
+                widget: select
+                default: grid
+                options:
+                  - { label: "Foto grande, ruolo e presentazione", value: grid }
+                  - { label: "Schede centrate (es. cariche del direttivo)", value: officers }
+                  - { label: "Schede compatte (es. responsabili di settore)", value: compact }
+              - { label: Mostra solo il gruppo, name: group, widget: string, required: false, hint: "Lascia vuoto per mostrare tutti. Deve coincidere con il campo «Gruppo» delle persone. Es. Cariche" }
 
           - label: Sponsor
             name: sponsors
@@ -212,6 +245,16 @@ collections:
                 fields:
                   - { label: Nome, name: label, widget: string }
                   - { label: File, name: file, widget: file }
+                  - { label: Anno, name: year, widget: string, required: false, hint: "Facoltativo. Es. 2024. Si vede accanto al nome e serve a ordinare" }
+              - label: Ordine
+                name: sort
+                widget: select
+                default: entered
+                options:
+                  - { label: "Come inseriti", value: entered }
+                  - { label: "Dal più recente (per anno)", value: newest }
+                  - { label: "Dal meno recente (per anno)", value: oldest }
+              - { label: "Mostra anche il pulsante Apri", name: show_open, widget: boolean, default: false, required: false, hint: "Apre il file in una nuova scheda, oltre a Scarica" }
 
           - label: Ultime news
             name: latest_news
@@ -236,6 +279,65 @@ collections:
             fields:
               - { label: Titolo, name: title, widget: string, default: "Contatti" }
               - { label: Introduzione, name: intro, widget: text, required: false }
+              - { label: Immagine a lato, name: image, widget: image, required: false, hint: "Facoltativa. Es. il codice QR del gruppo WhatsApp" }
+              - { label: Testo alternativo immagine, name: image_alt, widget: string, required: false, hint: "Descrivi l'immagine per chi non la vede. Per un QR scrivi dove porta" }
+              - { label: Didascalia, name: image_caption, widget: string, required: false }
+
+  # -----------------------------------------------------------
+  #  ATTIVITÀ (discipline, gare, corsi…): un file per attività.
+  #  Per un cliente cambia solo "label" (es. "Discipline", "Gare", "Corsi")
+  #  e, in Impostazioni → Dati del sito, nome e indirizzo della sezione.
+  # -----------------------------------------------------------
+  - name: activities
+    label: Attività
+    label_singular: Attività
+    folder: src/content/activities
+    create: true
+    slug: "{{slug}}"
+    identifier_field: title
+    editor: { preview: false }
+    summary: "{{title}}"
+    sortable_fields: [order, title]
+    fields:
+      - { label: Nome, name: title, widget: string }
+      - { label: Breve descrizione, name: description, widget: text, required: false, hint: "Compare in cima alla pagina e nei motori di ricerca" }
+      - { label: Immagine, name: image, widget: image, required: false, hint: "Scheda nell'elenco e immagine in cima alla pagina" }
+      - { label: Testo alternativo immagine, name: image_alt, widget: string, required: false, hint: "Descrivi l'immagine per chi non la vede" }
+      - label: Responsabili
+        name: managers
+        widget: relation
+        collection: team
+        search_fields: [name, role]
+        value_field: "{{slug}}"
+        display_fields: ["{{name}} — {{role}}"]
+        multiple: true
+        required: false
+        hint: "Persone dell'elenco Team. Se una persona viene eliminata, sparisce da qui"
+      - { label: Ordine, name: order, widget: number, value_type: int, default: 0, min: 0, required: false, hint: "Numero piccolo = prima. A parità di numero, in ordine alfabetico" }
+      - *sections_field
+
+  # -----------------------------------------------------------
+  #  TEAM (una persona = un file). Il nome del file resta fisso anche se
+  #  si cambia il nome: le Attività lo usano per indicare i responsabili.
+  # -----------------------------------------------------------
+  - name: team
+    label: Team
+    label_singular: Persona
+    folder: src/content/team
+    create: true
+    slug: "{{slug}}"
+    identifier_field: name
+    editor: { preview: false }
+    summary: "{{name}} — {{role}}"
+    sortable_fields: [order, name]
+    fields:
+      - { label: Nome, name: name, widget: string }
+      - { label: Ruolo, name: role, widget: string }
+      - { label: Foto, name: photo, widget: image, required: false }
+      - { label: Email, name: email, widget: string, required: false }
+      - { label: Breve presentazione, name: bio, widget: text, required: false }
+      - { label: Gruppo, name: group, widget: string, required: false, hint: "Facoltativo. Serve a mostrare gruppi diversi in sezioni diverse. Es. Cariche, Responsabili di settore" }
+      - { label: Ordine, name: order, widget: number, value_type: int, default: 0, min: 0, required: false, hint: "Numero piccolo = prima. A parità di numero, in ordine alfabetico" }
 
   # -----------------------------------------------------------
   #  IMPOSTAZIONI (un file per argomento)
@@ -280,6 +382,35 @@ collections:
               - { label: Link, name: url, widget: string }
           - { label: Link informativa privacy, name: privacy_url, widget: string, default: "/privacy" }
           - { label: Testo a piè di pagina, name: footer_note, widget: text, required: false }
+          - { label: Logo nel piè di pagina, name: footer_logo, widget: image, required: false, hint: "Versione chiara del logo, perché il fondo è scuro. Se vuoto si vede il nome del sito" }
+          - label: Colonne di link nel piè di pagina
+            name: footer_columns
+            widget: list
+            required: false
+            summary: "{{fields.title}}"
+            fields:
+              - { label: Titolo della colonna, name: title, widget: string }
+              - { label: "Aggiungi l'elenco delle attività", name: from_activities, widget: boolean, default: false, required: false, hint: "Dopo i link scritti a mano, aggiunge in automatico tutte le attività" }
+              - label: Link
+                name: links
+                widget: list
+                required: false
+                summary: "{{fields.label}}"
+                fields:
+                  - { label: Testo, name: label, widget: string }
+                  - { label: Link, name: url, widget: string }
+          - { label: "Attività: nome della sezione (plurale)", name: activities_label, widget: string, default: "Attività", required: false, hint: "Es. Discipline, Gare, Corsi. Compare nelle briciole di pane e nei titoli" }
+          - { label: "Attività: indirizzo della sezione", name: activities_path, widget: string, default: "attivita", required: false, hint: "Es. discipline → le pagine saranno /discipline/nome. Solo minuscole e trattini" }
+          - { label: "Attività: titolo «Altre…»", name: activities_more_title, widget: string, default: "Altre attività", required: false, hint: "Sotto ogni pagina di dettaglio. Es. Altre discipline / Altri corsi" }
+          - { label: "Attività: link a tutte", name: activities_all_label, widget: string, default: "Tutte le attività", required: false, hint: "Es. Tutte le discipline / Tutti i corsi" }
+          - { label: "Mostra le altre pagine della sezione", name: show_section_nav, widget: boolean, default: false, required: false, hint: "In fondo alle pagine che nel menu stanno dentro un sottomenu (es. La società), mostra le altre pagine di quel sottomenu" }
+          - { label: "Pulsanti di condivisione su news e attività", name: show_share_links, widget: boolean, default: false, required: false, hint: "Link per condividere su X e Facebook, senza script né cookie. Per le pagine normali si attiva pagina per pagina" }
+          - { label: "News: prima news in evidenza", name: news_featured, widget: boolean, default: false, required: false, hint: "Nell'elenco la news più recente appare grande, in cima" }
+          - { label: "News: colonna laterale", name: news_sidebar, widget: boolean, default: false, required: false, hint: "Nella pagina di una news mostra a fianco le altre news" }
+          - { label: "News: riquadro nella colonna — titolo", name: news_box_title, widget: string, required: false, hint: "Facoltativo, si vede solo con la colonna laterale. Es. Tesseramento" }
+          - { label: "News: riquadro nella colonna — testo", name: news_box_text, widget: text, required: false }
+          - { label: "News: riquadro nella colonna — testo pulsante", name: news_box_button_label, widget: string, required: false }
+          - { label: "News: riquadro nella colonna — link pulsante", name: news_box_button_url, widget: string, required: false }
 
       - label: Aspetto
         name: theme
@@ -296,6 +427,7 @@ collections:
               - { label: "Barlow Condensed (sportivo)", value: barlow }
               - { label: "Archivo (moderno)", value: archivo }
               - { label: "Fraunces (elegante)", value: fraunces }
+              - { label: "Source Serif 4 (editoriale)", value: source_serif }
           - label: Carattere testo
             name: body_font
             widget: select
@@ -321,6 +453,7 @@ collections:
             fields:
               - { label: Etichetta, name: label, widget: string }
               - { label: Link, name: url, widget: string, required: false, hint: "Es. /chi-siamo oppure https://… Lascia vuoto se la voce ha solo un sottomenu" }
+              - { label: "Mostra le attività come sottomenu", name: activities_submenu, widget: boolean, default: false, required: false, hint: "Aggiunge in automatico, sotto questa voce, tutte le attività (discipline, gare, corsi…)" }
               - label: Sottomenu
                 name: children
                 widget: list
@@ -329,21 +462,6 @@ collections:
                 fields:
                   - { label: Etichetta, name: label, widget: string }
                   - { label: Link, name: url, widget: string }
-
-      - label: Team
-        name: team
-        file: src/data/team.json
-        fields:
-          - label: Persone
-            name: people
-            widget: list
-            summary: "{{fields.name}} — {{fields.role}}"
-            fields:
-              - { label: Nome, name: name, widget: string }
-              - { label: Ruolo, name: role, widget: string }
-              - { label: Foto, name: photo, widget: image, required: false }
-              - { label: Email, name: email, widget: string, required: false }
-              - { label: Breve presentazione, name: bio, widget: text, required: false }
 
       - label: Sponsor
         name: sponsors

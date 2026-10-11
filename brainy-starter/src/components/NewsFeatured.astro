@@ -1,0 +1,19 @@
+---
+// La news più recente, in grande, in cima all'elenco (impostazione "prima news in evidenza").
+import type { CollectionEntry } from 'astro:content';
+import { formatDate } from '../lib/format';
+interface Props { post: CollectionEntry<'news'> }
+const { post } = Astro.props;
+const { title, date, excerpt, cover, cover_alt } = post.data;
+---
+<article class="relative mt-8 mb-12 grid gap-6 rounded-brand border border-line bg-paper p-4 md:grid-cols-2 md:items-center md:gap-10 md:p-6">
+  {cover && <img class="aspect-[3/2] w-full rounded-brand bg-line object-cover" src={cover} alt={cover_alt ?? ''} />}
+  <div class:list={[!cover && 'md:col-span-2']}>
+    <p class="mb-1 text-[0.8rem] font-bold uppercase tracking-[0.08em] text-accent">Ultima news</p>
+    <time class="text-[0.9rem] text-muted" datetime={date.toISOString()}>{formatDate(date)}</time>
+    <h2 class="mb-3 mt-1 text-[clamp(1.8rem,3.5vw,2.6rem)]">
+      <a class="text-ink no-underline after:absolute after:inset-0 after:content-[''] hover:text-accent" href={`/news/${post.id}`}>{title}</a>
+    </h2>
+    {excerpt && <p class="m-0 text-muted">{excerpt}</p>}
+  </div>
+</article>

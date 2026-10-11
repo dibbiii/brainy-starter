@@ -1,0 +1,51 @@
+---
+// Griglia di tutte le attività (discipline, gare, corsi…), con il responsabile di ciascuna.
+// Si inserisce in una pagina normale, per esempio quella con indirizzo /discipline.
+import { allActivities, activityUrl } from '../../lib/activities';
+import { membersById } from '../../lib/team';
+import { isExternal } from '../../lib/format';
+import { wrap, section, lead } from '../../lib/ui';
+interface Props { title?: string; intro?: string; link_label?: string; link_url?: string; show_managers?: boolean; id?: string }
+const { title, intro, link_label, link_url, show_managers = true, id } = Astro.props;
+
+const list = await allActivities();
+const items = await Promise.all(
+  list.map(async (a) => ({
+    a,
+    people: show_managers ? await membersById(a.data.managers, `attività "${a.data.title}"`) : [],
+  })),
+);
+const names = (people: { data: { name: string } }[]) =>
+  new Intl.ListFormat('it', { style: 'long', type: 'conjunction' }).format(people.map((p) => p.data.name));
+const hasLink = Boolean(link_label && link_url);
+---
+{items.length > 0 && (
+  <section class={section} id={id}>
+    <div class={wrap}>
+      {(title || hasLink) && (
+        <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+          {title ? <h2 class="mb-0">{title}</h2> : <span></span>}
+          {hasLink && <a class="font-semibold" href={link_url} rel={isExternal(link_url) ? 'noopener' : undefined}>{link_label}</a>}
+        </div>
+      )}
+      {intro && <p class={lead}>{intro}</p>}
+      <ul class="m-0 mt-8 grid list-none grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-x-gutter gap-y-8 p-0">
+        {items.map(({ a, people }) => (
+          <li class="group relative overflow-hidden rounded-brand border border-line bg-paper">
+            {a.data.image
+              ? <img class="aspect-[4/3] w-full bg-line object-cover" src={a.data.image} alt="" loading="lazy" />
+              : <span class="block aspect-[4/3] bg-tint" aria-hidden="true"></span>}
+            <div class="p-4">
+              <h3 class="mb-1 text-[1.35rem]">
+                <a class="text-ink no-underline after:absolute after:inset-0 after:content-[''] group-hover:text-accent" href={activityUrl(a)}>{a.data.title}</a>
+              </h3>
+              {people.length > 0 && (
+                <p class="m-0 text-[0.9rem] text-muted">{people.length > 1 ? 'Responsabili' : 'Responsabile'}: {names(people)}</p>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}

@@ -1,0 +1,29 @@
+---
+// "Altre discipline": le altre attività, in piccolo, sotto la pagina di dettaglio.
+import { allActivities, activityUrl, activitiesMoreTitle, activitiesAllLabel, activitiesIndexUrl, indexPageExists } from '../lib/activities';
+import { wrap, sectionTint } from '../lib/ui';
+interface Props { currentId?: string }
+const { currentId } = Astro.props;
+const others = (await allActivities()).filter((a) => a.id !== currentId);
+const hasIndex = await indexPageExists();
+---
+{others.length > 0 && (
+  <section class={sectionTint}>
+    <div class={wrap}>
+      <div class="flex flex-wrap items-baseline justify-between gap-4">
+        <h2 class="mb-0 text-[1.85rem]">{activitiesMoreTitle}</h2>
+        {hasIndex && <a class="font-semibold" href={activitiesIndexUrl}>{activitiesAllLabel}</a>}
+      </div>
+      <ul class="m-0 mt-6 grid list-none grid-cols-[repeat(auto-fill,minmax(9rem,1fr))] gap-4 p-0">
+        {others.map((a) => (
+          <li class="group relative">
+            {a.data.image
+              ? <img class="aspect-[4/3] w-full rounded-brand bg-line object-cover" src={a.data.image} alt="" loading="lazy" />
+              : <span class="block aspect-[4/3] rounded-brand bg-line" aria-hidden="true"></span>}
+            <a class="mt-2 block font-semibold text-ink no-underline after:absolute after:inset-0 after:content-[''] group-hover:text-accent" href={activityUrl(a)}>{a.data.title}</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}

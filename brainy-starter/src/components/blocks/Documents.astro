@@ -1,15 +1,40 @@
 ---
-import { wrap, section } from '../../lib/ui';
-interface Props { title?: string; files: { label: string; file: string }[]; id?: string }
-const { title, files, id } = Astro.props;
+// Elenco di documenti da scaricare. Opzioni: anno per documento, ordinamento
+// (come inseriti / più recenti / meno recenti) e il pulsante "Apri" oltre a "Scarica".
+import { wrap, section, button, buttonGhost, buttonPadSm } from '../../lib/ui';
+interface File { label: string; file: string; year?: string }
+interface Props { title?: string; files: File[]; sort?: 'entered' | 'newest' | 'oldest'; show_open?: boolean; id?: string }
+const { title, files, sort = 'entered', show_open = false, id } = Astro.props;
 const ext = (f: string) => f.split('.').pop()?.toUpperCase() ?? '';
+
+// L'anno è testo libero: si ordina solo se è un numero; i documenti senza anno vanno in fondo
+const num = (y?: string) => { const n = parseInt(y ?? '', 10); return Number.isNaN(n) ? null : n; };
+const list = sort === 'entered' ? files : [...files].sort((a, b) => {
+  const x = num(a.year), y = num(b.year);
+  if (x === null && y === null) return 0;
+  if (x === null) return 1;
+  if (y === null) return -1;
+  return sort === 'newest' ? y - x : x - y;
+});
+const badge = 'inline-block min-w-[4.25rem] rounded-brand bg-primary px-3 py-1 text-center font-heading font-bold text-paper';
 ---
 <section class={section} id={id}>
   <div class={wrap}>
     {title && <h2>{title}</h2>}
     <ul class="mt-6 max-w-measure">
-      {files.map((d) => (
-        <li class="border-t border-line py-[0.9rem] flex justify-between gap-4 last:border-b"><a class="font-semibold" href={d.file} download>{d.label}</a> <span class="text-muted text-[0.85rem]">{ext(d.file)}</span></li>
+      {list.map((d) => show_open ? (
+        <li class="border-t border-line py-[0.9rem] flex flex-wrap items-center gap-x-4 gap-y-2 last:border-b">
+          {d.year && <span class={badge}>{d.year}</span>}
+          <span class="mr-auto"><span class="font-semibold">{d.label}</span> <span class="ml-2 text-muted text-[0.85rem]">{ext(d.file)}</span></span>
+          <a class:list={[buttonGhost, buttonPadSm]} href={d.file} target="_blank" rel="noopener">Apri</a>
+          <a class:list={[button, buttonPadSm]} href={d.file} download>Scarica</a>
+        </li>
+      ) : (
+        <li class="border-t border-line py-[0.9rem] flex justify-between gap-4 last:border-b">
+          {d.year
+            ? <span><span class:list={[badge, 'mr-3']}>{d.year}</span><a class="font-semibold" href={d.file} download>{d.label}</a></span>
+            : <a class="font-semibold" href={d.file} download>{d.label}</a>} <span class="text-muted text-[0.85rem]">{ext(d.file)}</span>
+        </li>
       ))}
     </ul>
   </div>

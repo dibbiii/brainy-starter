@@ -1,13 +1,24 @@
 ---
-import { team } from "../../lib/site";
+// Persone del Team, in tre aspetti:
+//  - grid:    foto grande, ruolo, presentazione, email (predefinito)
+//  - officers: schede centrate con cerchio, nome e ruolo (es. cariche del direttivo)
+//  - compact: schede piccole con iniziali, ruolo e nome (es. responsabili di settore)
+// "group" mostra solo le persone di quel gruppo (campo "Gruppo" della persona).
+import { teamMembers } from "../../lib/team";
 import { wrap, section, lead } from "../../lib/ui";
 interface Props {
     title?: string;
     intro?: string;
     limit?: number;
+    layout?: "grid" | "officers" | "compact";
+    group?: string;
     id?: string;
 }
-const { title, intro, limit = 0, id } = Astro.props;
+const { title, intro, limit = 0, layout = "grid", group, id } = Astro.props;
+const norm = (s?: string) => (s ?? "").trim().toLowerCase();
+const team = (await teamMembers())
+    .map((m) => m.data)
+    .filter((p) => !group || norm(p.group) === norm(group));
 const people = limit > 0 ? team.slice(0, limit) : team;
 const initials = (n: string) =>
     n
@@ -15,14 +26,47 @@ const initials = (n: string) =>
         .map((p) => p[0])
         .slice(0, 2)
         .join("");
+const list = {
+    grid: "grid gap-x-gutter gap-y-8 grid-cols-[repeat(auto-fill,minmax(12rem,1fr))] mt-8",
+    officers: "m-0 grid list-none gap-4 p-0 grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] mt-8",
+    compact: "m-0 grid list-none gap-3 p-0 grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] mt-8",
+}[layout];
 ---
 
+{people.length > 0 && (
 <section class={section} id={id}>
     <div class={wrap}>
         {title && <h2>{title}</h2>}
         {intro && <p class={lead}>{intro}</p>}
-        <ul class="grid gap-x-gutter gap-y-8 grid-cols-[repeat(auto-fill,minmax(12rem,1fr))] mt-8">
-            {people.map((p) => (
+        <ul class={list}>
+            {people.map((p) => layout === "officers" ? (
+                <li class="rounded-brand border border-line bg-paper p-6 text-center">
+                    {p.photo ? (
+                        <img class="mx-auto mb-4 size-20 rounded-full object-cover" src={p.photo} alt="" loading="lazy" />
+                    ) : (
+                        <span class="mx-auto mb-4 grid size-20 place-items-center rounded-full bg-primary font-heading text-2xl font-bold text-paper" aria-hidden="true">
+                            {initials(p.name)}
+                        </span>
+                    )}
+                    <h3 class="mb-1 text-[1.3rem]">{p.name}</h3>
+                    <p class="mb-1 text-[0.78rem] font-bold uppercase tracking-[0.08em] text-accent">{p.role}</p>
+                    {p.bio && <p class="m-0 text-[0.9rem] text-muted">{p.bio}</p>}
+                </li>
+            ) : layout === "compact" ? (
+                <li class="flex items-center gap-3 rounded-brand border border-line bg-paper p-3">
+                    {p.photo ? (
+                        <img class="size-11 shrink-0 rounded-full object-cover" src={p.photo} alt="" loading="lazy" />
+                    ) : (
+                        <span class="grid size-11 shrink-0 place-items-center rounded-full bg-primary font-heading text-[0.95rem] font-bold text-paper" aria-hidden="true">
+                            {initials(p.name)}
+                        </span>
+                    )}
+                    <div>
+                        <p class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-accent">{p.role}</p>
+                        <p class="m-0 font-semibold">{p.name}</p>
+                    </div>
+                </li>
+            ) : (
                 <li>
                     {p.photo ? (
                         <img class="w-full aspect-square object-cover rounded-brand mb-[0.9rem]" src={p.photo} alt="" loading="lazy" />
@@ -44,3 +88,4 @@ const initials = (n: string) =>
         </ul>
     </div>
 </section>
+)}

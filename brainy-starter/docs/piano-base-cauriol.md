@@ -34,114 +34,117 @@ e confronto con lo stato attuale della base.
   remote `base`** (la procedura `git remote add base …` è già nel README).
 - File: `README.md`.
 
-### 1. Header: pulsante in evidenza, logo + nome + sottotitolo
-- Oggi: logo **oppure** nome (`Header.astro`).
-- Nuovi campi in `site.json` (tutti facoltativi): `header_button` (testo e
-  link), `show_name_with_logo`, `header_subtitle`.
-- File: `public/admin/config.yml` (Dati del sito), `src/lib/site.ts`,
-  `src/components/Header.astro`.
-- Il menu a tendina esiste già e non cambia.
+### 1. Header: pulsante in evidenza, logo + nome + sottotitolo — FATTO
+- Era: logo **oppure** nome (`Header.astro`).
+- Campi in `site.json` (tutti facoltativi): `header_button_label` e
+  `header_button_url` (due campi separati: Decap salva in modo poco affidabile
+  gli oggetti vuoti), `show_name_with_logo`, `header_subtitle`.
+- File: `config.yml` (Dati del sito), `site.ts`, `Header.astro`.
+- Corretto anche lo script del menu mobile, che non si richiudeva passando da
+  desktop a mobile.
 
-### 2. Intestazione di pagina: briciole, descrizione, immagine
-- Oggi: titolo della pagina con `show_title` (`[...slug].astro`).
-- Nuovo: fascia in cima con briciole di pane (ricavate dall'URL e dal menu),
-  descrizione (campo `description`, già presente) e immagine facoltativa a
-  destra (nuovo campo `header_image`, usato dalle pagine disciplina).
-- File: `config.yml` e `content.config.ts` (collezione `pages`), nuovo
-  componente `PageHeader.astro`, `[...slug].astro`.
-- Nella fascia c'è un punto di aggancio per la decorazione (passo 12).
+### 2. Intestazione di pagina: briciole, descrizione, immagine — FATTO
+- Un **interruttore unico per il sito**, `page_header_style` in `site.json`:
+  `simple` (come prima, predefinito) oppure `band` (fascia colorata con
+  briciole di pane, titolo, descrizione e immagine). Non è per pagina: tutte
+  le pagine di un sito devono avere la stessa testata.
+- Per pagina, solo l'immagine in cima: `header_image` e `header_image_alt`
+  (usata dalle pagine disciplina).
+- File: `config.yml`, `content.config.ts`, `site.ts`,
+  `src/lib/breadcrumbs.ts` (nuovo), `src/components/PageHeader.astro`
+  (nuovo), `src/pages/[...slug].astro`.
+- Lo stile `band` ha solo il colore pieno. La decorazione (montagne) è del
+  cliente e arriva al passo 12. `PageHeader` accetta briciole passate
+  dall'esterno, per le news (passo 8) e le Attività (passo 6).
 
-### 3. Footer a colonne, con citazione
-- Oggi: 3 colonne fisse (nome, contatti, social).
-- Nuovo, facoltativo: `footer_quote` e `footer_columns` (titolo + elenco di
-  link). Una colonna può essere generata dalle Attività (passo 6).
-- File: `site.json`, `config.yml`, `site.ts`, `Footer.astro`.
+### 3. Footer a colonne — FATTO
+- Era: 3 colonne fisse (nome, contatti, social).
+- Nuovo, facoltativo: `footer_logo` (versione chiara del logo) e
+  `footer_columns` (colonne con titolo ed elenco di link).
+- **Niente `footer_quote`**: la frase in corsivo del mockup è il "Motto"
+  (`tagline`), che il footer mostra già. Lo stile (corsivo) è del cliente.
+- Una colonna potrà essere alimentata dalle Attività (passo 6).
+- File: `config.yml`, `site.ts`, `Footer.astro`.
 
-### 4. Blocco "Numeri"
+### 4. Blocco "Numeri" — FATTO
 - 2–4 cifre con etichetta (es. 1947 · anno di fondazione). Appare in Home,
   La storia, Vantaggi economici, Orienteering.
-- Nuovo blocco `stats` (vedi "Aggiungere un nuovo blocco" nel README): voce in
-  `config.yml`, schema in `content.config.ts`, `blocks/Stats.astro`,
-  registrazione in `Blocks.astro`.
+- Due aspetti, come nel mockup: `row` (riquadro diviso da filetti) e `cards`
+  (schede separate). Senza icone (la base non ha un sistema di icone).
+- File: `config.yml`, `content.config.ts`, `blocks/Stats.astro`,
+  `Blocks.astro`. Guida: `docs/aggiungere-un-blocco.md`.
 
-### 5. Blocco "Linea del tempo" (facoltativo)
-- Mostra un periodo con data di inizio e fine (nel mockup: mandato del
-  direttivo, 19.04.2024 → primavera 2028).
-- Nuovo blocco `timeline`, con la stessa procedura del passo 4. Chi non lo
-  vuole non lo inserisce nella pagina.
+### 5. Blocco "Periodo" (linea del tempo) — FATTO
+- Nel mockup è una riga con un'etichetta all'inizio, una linea e
+  un'etichetta alla fine (mandato del direttivo: 19.04.2024 → primavera 2028).
+  Non una cronologia con tanti punti. Le due etichette sono testo libero.
+- Blocco `timeline`, stessa procedura del passo 4. Chi non lo vuole non lo
+  inserisce nella pagina.
 
-### 6. Collezione "Attività" (discipline, gare, corsi)
-- Un file per attività: nome, immagine, descrizione, responsabile e contenuto
-  a blocchi (come le pagine).
-- Da lì si generano: griglia, pagine di dettaglio, sottomenu, colonna del
-  footer, "Altre discipline" in fondo a ogni dettaglio.
-- Il nome mostrato nel pannello si cambia per cliente (`label` in
-  `config.yml`): "Discipline", "Gare", "Corsi".
-- **Responsabile**: menu a tendina che pesca dalle persone di `team.json`
-  (widget `relation` di Decap).
-  **Da verificare prima di scrivere codice**: come si collega un campo
-  `relation` a un file con una lista, nella versione di Decap fissata in
-  `package.json` (controllare la documentazione).
-- Le news ricevono un campo facoltativo `activity` per mostrare "Notizie"
-  filtrate su ogni disciplina.
-- File: `config.yml`, `content.config.ts`, `src/pages/` (nuove rotte),
-  `src/lib/` (helper), componenti griglia e "Altre attività".
+### 6. Collezione "Attività" (discipline, gare, corsi) — FATTO
+- **6.0 Team come collezione**: una persona = un file (`src/content/team/`). Serve a
+  collegare le attività alle persone con un identificativo stabile: il nome del file non
+  cambia se si rinomina la persona (verificato nel codice di Decap e nel pannello).
+  `team.json` non esiste più.
+- Collezione `activities`: nome, descrizione, immagine, **responsabili** (scelti dal Team),
+  ordine, sezioni (stesso elenco di blocchi delle pagine, riusato con un'ancora YAML).
+- Pagine di dettaglio generate da `[...slug].astro` con prefisso configurabile
+  (`activities_path`): intestazione, responsabili, sezioni, **news collegate** e
+  "Altre attività". L'elenco è una pagina normale con il blocco *Elenco delle attività*.
+- Persona eliminata: sparisce dai responsabili e la build avvisa senza fermarsi.
+- Nome della sezione e testi "Altre…/Tutte…" sono impostazioni (il genere cambia: discipline /
+  corsi).
+- Guida: `docs/aggiungere-una-collezione.md`.
 
-### 7. Persone: cariche e responsabili di settore
-- Oggi il blocco `team` mostra tutte le persone. Servono: cariche con iniziali
-  nel cerchio, e "responsabili di settore" (nome + disciplina).
-- Si estende il blocco `team` con un campo `layout` (elenco / cariche /
-  responsabili); i responsabili si leggono dalle Attività (passo 6).
+### 7. Persone: cariche e responsabili di settore — FATTO
+- Blocco `team` con `layout` (foto grande / schede centrate / schede compatte) e `group`
+  (mostra solo un gruppo). I "responsabili di settore" del mockup sono persone del Team con
+  il ruolo uguale al settore, non dati derivati dalle attività.
 
-### 8. Notizie: filtro per anno, ultima in evidenza, colonna laterale
-- Elenco: filtro per anno e prima notizia in evidenza (`src/pages/news/`,
-  `NewsList.astro`, `NewsCard.astro`). Va tenuta la paginazione esistente:
-  il mockup mostra 48 articoli in una pagina sola, ma il sito reale non deve
-  caricarli tutti insieme.
-- Dettaglio: colonna "Altre notizie" e scheda opzionale (es. tesseramento).
+### 8. Notizie — FATTO
+- Filtro per anno (pagine `/news/anno/AAAA`, solo se ci sono news di più anni), prima news in
+  evidenza, colonna laterale con "Altre news" e riquadro facoltativo; usa `PageHeader` nello
+  stile `band`. Tutto a interruttore nelle impostazioni.
 
-### 9. Navigazione tra le pagine di una sezione
-- Le pagine di "La società" mostrano in fondo le altre pagine della sezione.
-  Si ricava dal menu (`menu.json`), senza campi nuovi.
-- Nota: nel menu attuale i figli puntano ad ancore (`/la-societa#team`).
-  Per Cauriol servono pagine vere; il menu lo permette già.
+### 9. Navigazione tra le pagine di una sezione — FATTO
+- `show_section_nav`: in fondo alle pagine di un sottomenu, le altre pagine della sezione
+  (le voci con `#` non sono pagine e si saltano).
 
-### 10. Pulsanti di condivisione (X e Facebook)
-- Solo link con l'indirizzo della pagina, **nessuno script e nessun SDK
-  esterno**, quindi nessuna richiesta a terzi finché il visitatore non clicca.
-- Attivabili per pagina o per news con un campo facoltativo.
-- File: nuovo `ShareLinks.astro`, `news/[slug].astro`, `[...slug].astro`.
-- Da annotare nel README (sezione GDPR).
+### 10. Pulsanti di condivisione (X e Facebook) — FATTO
+- Semplici link, senza script. `show_share_links` per news e attività; `show_share` per pagina.
 
-### 11. Documenti: anno, "Apri" e "Scarica"
-- Il blocco `documents` ha etichetta e file. Aggiungere un campo facoltativo
-  `year`, l'ordinamento (più recenti / meno recenti) e il doppio pulsante.
-- File: `config.yml`, `content.config.ts`, `blocks/Documents.astro`.
+### 11. Documenti: anno, "Apri" e "Scarica" — FATTO
+- `year` per documento, `sort` e `show_open`. Non c'è l'interruttore interattivo
+  "più recenti / meno recenti" del mockup (richiederebbe JavaScript): l'ordine si sceglie nel blocco.
 
-### 12. Punti di aggancio per il cliente: `src/brand/`
-- Cartella con file neutri nella base: un componente decorativo per header e
-  footer e un file CSS extra. I componenti della base li includono sempre.
-- Nella base non disegnano nulla; nel repository di Cauriol contengono montagne
-  e boschi.
-- Si fa **per ultimo**, quando i passi 2 e 3 hanno chiarito dove servono
-  davvero.
+### 11b. Menu e footer alimentati dalle attività — FATTO
+- `activities_submenu` su una voce del menu e `from_activities` su una colonna del footer.
 
-## Cosa resta da chiarire (non blocca i passi 0–5)
+### 12. Punti di aggancio per il cliente: `src/brand/` — FATTO
+- `PageHeaderDecor.astro`, `FooterDecor.astro`, `brand.css`: vuoti nella base. Guida in
+  `src/brand/README.md`. Elenco completo delle funzioni facoltative:
+  `docs/funzioni-facoltative.md`.
 
-- **Sponsor**: il mockup ha un carosello di loghi (richiede JavaScript). Il
-  blocco attuale è una griglia: probabilmente basta quella.
-- **Contatti**: il QR del gruppo WhatsApp è un'immagine da aggiungere al
-  blocco Contatti, con campo facoltativo.
-- **Mobile**: nel PDF non ci sono schermate mobile. Il comportamento si
-  decide con la base reale.
-- **Pagina privacy**: non disegnata nel mockup.
-- **Carattere dei titoli**: Source Serif 4 non è tra le opzioni
-  (`theme.json` ha Barlow, Archivo, Fraunces). Va aggiunto via Fontsource,
-  self-hosted come gli altri, per non fare richieste a Google.
-- **Testi e immagini reali**: il mockup ha segnaposto ("[TESTO
-  DELL'ARTICOLO]", "[NOME SOSTENITORE]"). Vanno presi dal sito WordPress.
-- **Migrazione delle news**: ~48 articoli dal 2019 (WordPress →
-  Markdown, con script di adattamento allo schema).
+## Cosa resta da chiarire
+
+Fatti nella base (dopo il passo 12): il carattere **Source Serif 4** tra le opzioni dei titoli e
+l'**immagine a lato** nel blocco Contatti (per il QR di WhatsApp).
+
+Non fatti, per scelta o perché riguardano solo il cliente:
+
+- **Sponsor**: il mockup ha un carosello di loghi (richiede JavaScript). Il blocco della base è
+  una griglia, che per ora basta.
+- **Mobile**: nel PDF non ci sono schermate mobile; il comportamento è stato verificato sulla base
+  reale a 400 px.
+- **Pagina privacy**: non disegnata nel mockup; il demo ha un testo segnaposto.
+- **Icone** (Home del mockup, contatti e social del footer): la base non ha un sistema di icone.
+- **Testi e immagini reali**: il mockup ha segnaposto ("[TESTO DELL'ARTICOLO]", "[NOME
+  SOSTENITORE]"). Vanno presi dal sito WordPress.
+- **Migrazione delle news**: ~48 articoli dal 2019 (WordPress → Markdown, con script di
+  adattamento allo schema).
+- **Controllo dei tipi**: ora c'è (`npm run check`, con `tsconfig.json` strict): 0 errori su 54 file.
+  La build da sola non controlla i tipi, quindi va lanciato a parte.
+
 
 ## Dopo la base: sito Cauriol
 

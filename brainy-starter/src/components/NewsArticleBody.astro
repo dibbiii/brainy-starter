@@ -1,0 +1,29 @@
+---
+// Il contenuto di una news: intestazione, immagine, testo e allegati.
+// Con la fascia (page_header_style = band) titolo e data stanno già nell'intestazione di pagina.
+import type { CollectionEntry } from 'astro:content';
+import ShareLinks from './ShareLinks.astro';
+import { site } from '../lib/site';
+import { formatDate } from '../lib/format';
+import { lead, prose } from '../lib/ui';
+interface Props { post: CollectionEntry<'news'>; Content: any; band?: boolean }
+const { post, Content, band = false } = Astro.props;
+const { title, date, excerpt, cover, cover_alt, attachments } = post.data;
+---
+{(!band || excerpt) && (
+  <header class="max-w-measure">
+    {!band && <a class="inline-block mb-6 font-semibold" href="/news">Tutte le news</a>}
+    {!band && <time class="block text-muted mb-2" datetime={date.toISOString()}>{formatDate(date)}</time>}
+    {!band && <h1>{title}</h1>}
+    {excerpt && <p class:list={[lead, band && 'mt-0']}>{excerpt}</p>}
+  </header>
+)}
+{cover && <img class="w-full max-h-[36rem] object-contain object-left mt-8 mb-10 rounded-brand" src={cover} alt={cover_alt ?? ''} />}
+<div class={prose}><Content /></div>
+{attachments && attachments.length > 0 && (
+  <aside class="max-w-measure mt-12 border-t-[3px] border-ink pt-4">
+    <h2 class="text-[1.6rem]">Allegati</h2>
+    <ul class="list-disc pl-[1.2em]">{attachments.map((a) => <li><a href={a.file} download>{a.label}</a></li>)}</ul>
+  </aside>
+)}
+{site.show_share_links && <ShareLinks title={title} />}

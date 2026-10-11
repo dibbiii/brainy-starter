@@ -1,19 +1,50 @@
 ---
 import Base from '../layouts/Base.astro';
 import NewsCard from './NewsCard.astro';
+import NewsFeatured from './NewsFeatured.astro';
+import PageHeader from './PageHeader.astro';
+import { site } from '../lib/site';
 import { wrap, section, segnavia, lead } from '../lib/ui';
 import type { CollectionEntry } from 'astro:content';
-interface Props { posts: CollectionEntry<'news'>[]; current: number; last: number }
-const { posts, current, last } = Astro.props;
+// "years": anni con news (il filtro compare solo se sono almeno due). "year": anno scelto.
+interface Props { posts: CollectionEntry<'news'>[]; current: number; last: number; years?: number[]; year?: number }
+const { posts, current, last, years = [], year } = Astro.props;
 const href = (n: number) => (n === 1 ? '/news' : `/news/pagina/${n}`);
+
+const band = site.page_header_style === 'band';
+const description = 'Notizie, eventi e comunicazioni.';
+const crumbs = [
+  { label: 'Home', url: '/' },
+  { label: 'News', url: year ? '/news' : undefined },
+  ...(year ? [{ label: String(year) }] : []),
+];
+// La prima news è grande solo nell'elenco completo, prima pagina, se l'impostazione è attiva
+const featured = Boolean(site.news_featured) && !year && current === 1 && posts.length > 1;
+const [first, ...rest] = posts;
+const gridPosts = featured ? rest : posts;
+const pill = 'rounded-full border px-4 py-1 text-[0.9rem] font-semibold no-underline';
 ---
-<Base title={current === 1 ? 'News' : `News – pagina ${current}`} description="Notizie, eventi e comunicazioni.">
+<Base title={year ? `News ${year}` : current === 1 ? 'News' : `News – pagina ${current}`} description={description}>
+  {band && <PageHeader title="News" description={description} crumbs={crumbs} />}
   <div class:list={[wrap, section]}>
-    <span class={segnavia} aria-hidden="true"></span>
-    <h1>News</h1>
+    {!band && <span class={segnavia} aria-hidden="true"></span>}
+    {!band && <h1>News</h1>}
+    {years.length > 1 && (
+      <nav class="mt-6 flex flex-wrap gap-2" aria-label="Filtra le news per anno">
+        <a class:list={[pill, !year ? 'border-primary bg-primary text-paper hover:text-paper' : 'border-line text-ink hover:border-primary hover:text-ink']} href="/news" aria-current={!year ? 'page' : undefined}>Tutte</a>
+        {years.map((y) => (
+          <a class:list={[pill, y === year ? 'border-primary bg-primary text-paper hover:text-paper' : 'border-line text-ink hover:border-primary hover:text-ink']} href={`/news/anno/${y}`} aria-current={y === year ? 'page' : undefined}>{y}</a>
+        ))}
+      </nav>
+    )}
     {posts.length === 0
       ? <p class={lead}>Non ci sono ancora news. La prima si pubblica dal pannello Gestione contenuti.</p>
-      : <div class="grid gap-x-gutter gap-y-12 grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] mt-8">{posts.map((post) => <NewsCard post={post} />)}</div>}
+      : (
+        <>
+          {featured && <NewsFeatured post={first} />}
+          <div class="grid gap-x-gutter gap-y-12 grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] mt-8">{gridPosts.map((post) => <NewsCard post={post} />)}</div>
+        </>
+      )}
     {last > 1 && (
       <nav class="flex gap-8 justify-center mt-16 font-semibold" aria-label="Pagine delle news">
         {current > 1 && <a href={href(current - 1)}>Più recenti</a>}
