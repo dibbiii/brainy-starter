@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import tailwindcss from '@tailwindcss/vite';
 import site from './src/data/site.json' with { type: 'json' };
 
 // L'URL del sito arriva dalle impostazioni modificabili dal CMS,
@@ -9,4 +10,5 @@ export default defineConfig({
   trailingSlash: 'ignore',
   devToolbar: { enabled: false },
   integrations: [sitemap({ filter: (page) => !page.includes('/admin') })],
+  vite: { plugins: [tailwindcss()] },
 });

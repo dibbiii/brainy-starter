@@ -5,24 +5,12 @@ interface Props { post: CollectionEntry<'news'> }
 const { post } = Astro.props;
 const { title, date, excerpt, cover, cover_alt } = post.data;
 ---
-<article class="newscard">
-  {cover && <img src={cover} alt={cover_alt ?? ''} loading="lazy" />}
+<article class="relative grid gap-[0.9rem] content-start">
+  {cover && <img class="aspect-[3/2] object-cover w-full rounded-brand bg-line" src={cover} alt={cover_alt ?? ''} loading="lazy" />}
   <div>
-    <time datetime={date.toISOString()}>{formatDate(date)}</time>
-    <h3><a href={`/news/${post.id}`}>{title}</a></h3>
-    {excerpt && <p>{excerpt}</p>}
+    <time class="text-[0.9rem] text-muted" datetime={date.toISOString()}>{formatDate(date)}</time>
+    {/* Tutta la scheda è cliccabile tramite il link del titolo (after:inset-0) */}
+    <h3 class="mt-[0.2rem] mb-[0.4rem] text-[1.6rem]"><a class="text-ink no-underline hover:text-accent after:content-[''] after:absolute after:inset-0" href={`/news/${post.id}`}>{title}</a></h3>
+    {excerpt && <p class="text-muted m-0">{excerpt}</p>}
   </div>
 </article>
-
-<style>
-  .newscard { display: grid; gap: 0.9rem; align-content: start; }
-  .newscard img { aspect-ratio: 3 / 2; object-fit: cover; width: 100%; border-radius: var(--radius); background: var(--c-line); }
-  .newscard time { font-size: 0.9rem; color: var(--c-muted); }
-  .newscard h3 { margin: 0.2rem 0 0.4rem; font-size: 1.6rem; }
-  .newscard h3 a { color: var(--c-ink); text-decoration: none; }
-  .newscard h3 a:hover { color: var(--c-accent); }
-  /* Tutta la scheda è cliccabile tramite il link del titolo */
-  .newscard { position: relative; }
-  .newscard h3 a::after { content: ''; position: absolute; inset: 0; }
-  .newscard p { color: var(--c-muted); margin: 0; }
-</style>

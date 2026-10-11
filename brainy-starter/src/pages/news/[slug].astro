@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { formatDate } from '../../lib/format';
 import { publishedNews } from '../../lib/news';
+import { wrap, lead, prose } from '../../lib/ui';
 
 export async function getStaticPaths() {
   const posts = await publishedNews();
@@ -14,31 +15,20 @@ const { title, date, excerpt, cover, cover_alt, attachments } = post.data;
 const { Content } = await render(post);
 ---
 <Base title={title} description={excerpt} image={cover}>
-  <article class="wrap article">
-    <header>
-      <a class="back" href="/news">Tutte le news</a>
-      <time datetime={date.toISOString()}>{formatDate(date)}</time>
+  <article class:list={[wrap, 'py-[clamp(2.5rem,7vw,5rem)]']}>
+    <header class="max-w-measure">
+      <a class="inline-block mb-6 font-semibold" href="/news">Tutte le news</a>
+      <time class="block text-muted mb-2" datetime={date.toISOString()}>{formatDate(date)}</time>
       <h1>{title}</h1>
-      {excerpt && <p class="lead">{excerpt}</p>}
+      {excerpt && <p class={lead}>{excerpt}</p>}
     </header>
-    {cover && <img class="article__cover" src={cover} alt={cover_alt ?? ''} />}
-    <div class="prose"><Content /></div>
+    {cover && <img class="w-full max-h-[36rem] object-contain object-left mt-8 mb-10 rounded-brand" src={cover} alt={cover_alt ?? ''} />}
+    <div class={prose}><Content /></div>
     {attachments && attachments.length > 0 && (
-      <aside class="article__files">
-        <h2>Allegati</h2>
-        <ul>{attachments.map((a) => <li><a href={a.file} download>{a.label}</a></li>)}</ul>
+      <aside class="max-w-measure mt-12 border-t-[3px] border-ink pt-4">
+        <h2 class="text-[1.6rem]">Allegati</h2>
+        <ul class="list-disc pl-[1.2em]">{attachments.map((a) => <li><a href={a.file} download>{a.label}</a></li>)}</ul>
       </aside>
     )}
   </article>
 </Base>
-
-<style>
-  .article { padding-block: clamp(2.5rem, 7vw, 5rem); }
-  .article header { max-width: var(--measure); }
-  .back { display: inline-block; margin-bottom: 1.5rem; font-weight: 600; }
-  .article time { display: block; color: var(--c-muted); margin-bottom: 0.5rem; }
-  .article__cover { width: 100%; max-height: 36rem; object-fit: contain; object-position: left; margin: 2rem 0 2.5rem; border-radius: var(--radius); }
-  .article__files { max-width: var(--measure); margin-top: 3rem; border-top: 3px solid var(--c-ink); padding-top: 1rem; }
-  .article__files h2 { font-size: 1.6rem; }
-  .article__files ul { padding-left: 1.2em; }
-</style>

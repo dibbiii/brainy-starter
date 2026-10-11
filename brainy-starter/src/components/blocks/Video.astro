@@ -2,35 +2,29 @@
 // GDPR: nessuna richiesta a YouTube finché il visitatore non clicca.
 // Poi si usa youtube-nocookie.com.
 import { youtubeId } from '../../lib/format';
+import { wrap, section, button, buttonPad } from '../../lib/ui';
 interface Props { title?: string; url: string; id?: string }
 const { title, url, id } = Astro.props;
 const vid = youtubeId(url);
 ---
 {vid && (
-  <section class="section" id={id}>
-    <div class="wrap">
+  <section class={section} id={id}>
+    <div class={wrap}>
       {title && <h2>{title}</h2>}
-      <div class="video" data-video={vid}>
-        <div class="video__consent">
-          <p>Il video è ospitato su YouTube. Se lo carichi, YouTube riceverà alcuni dati sulla tua visita, come l'indirizzo IP.</p>
-          <button type="button" class="button">Carica il video</button>
-          <a href={`https://www.youtube.com/watch?v=${vid}`} rel="noopener">Oppure guardalo su YouTube</a>
+      {/* [&_iframe]: serve perché l'iframe viene creato dallo script qui sotto */}
+      <div class="aspect-video bg-ink text-paper rounded-brand overflow-hidden max-w-[56rem] [&_iframe]:w-full [&_iframe]:h-full [&_iframe]:border-0 [&_iframe]:block" data-video={vid}>
+        <div class="h-full grid place-content-center justify-items-center text-center gap-4 p-6">
+          <p class="max-w-[30rem] m-0">Il video è ospitato su YouTube. Se lo carichi, YouTube riceverà alcuni dati sulla tua visita, come l'indirizzo IP.</p>
+          <button type="button" class:list={[button, buttonPad]}>Carica il video</button>
+          <a class="text-paper text-[0.95rem]" href={`https://www.youtube.com/watch?v=${vid}`} rel="noopener">Oppure guardalo su YouTube</a>
         </div>
       </div>
     </div>
   </section>
 )}
 
-<style>
-  .video { aspect-ratio: 16 / 9; background: var(--c-ink); color: #fff; border-radius: var(--radius); overflow: hidden; max-width: 56rem; }
-  .video__consent { height: 100%; display: grid; place-content: center; justify-items: center; text-align: center; gap: 1rem; padding: 1.5rem; }
-  .video__consent p { max-width: 30rem; margin: 0; }
-  .video__consent a { color: #fff; font-size: 0.95rem; }
-  .video :global(iframe) { width: 100%; height: 100%; border: 0; display: block; }
-</style>
-
 <script>
-  document.querySelectorAll<HTMLElement>('.video[data-video]').forEach((box) => {
+  document.querySelectorAll<HTMLElement>('[data-video]').forEach((box) => {
     box.querySelector('button')?.addEventListener('click', () => {
       const iframe = document.createElement('iframe');
       iframe.src = `https://www.youtube-nocookie.com/embed/${box.dataset.video}?autoplay=1`;

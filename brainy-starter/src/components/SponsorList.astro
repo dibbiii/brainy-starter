@@ -7,34 +7,26 @@ const order: Sponsor['tier'][] = ['main', 'partner', 'institutional'];
 const groups = order
   .map((tier) => ({ tier, items: sponsors.filter((s) => (s.tier ?? 'partner') === tier) }))
   .filter((g) => g.items.length > 0);
+
+// Nella versione compatta (footer) tutti i livelli hanno la stessa dimensione.
+// Le classi sono scritte per intero, così Tailwind le trova.
+const logoSize = (tier: Sponsor['tier']) =>
+  compact ? 'max-h-12' : tier === 'main' ? 'max-h-24' : 'max-h-16';
+const nameSize = (tier: Sponsor['tier']) =>
+  compact ? 'text-[1.15rem]' : tier === 'main' ? 'text-[1.9rem]' : 'text-[1.4rem]';
 ---
-<div class:list={['sponsors', { 'sponsors--compact': compact }]}>
+<div class:list={['grid', compact ? 'gap-5' : 'gap-8']}>
   {groups.map((g) => (
-    <div class="sponsors__group">
-      <h3 class="sponsors__tier">{tierLabels[g.tier]}</h3>
-      <ul class:list={['sponsors__list', `sponsors__list--${g.tier}`]}>
+    <div>
+      <h3 class="font-body text-[0.95rem] font-semibold text-muted mb-3">{tierLabels[g.tier]}</h3>
+      <ul class="flex flex-wrap gap-x-10 gap-y-4 items-center">
         {g.items.map((s) => {
           const inner = s.logo
-            ? <img src={s.logo} alt={s.name} loading="lazy" />
-            : <span class="sponsors__name">{s.name}</span>;
-          return <li>{s.url ? <a href={s.url} rel="noopener">{inner}</a> : inner}</li>;
+            ? <img class:list={[logoSize(g.tier), 'w-auto']} src={s.logo} alt={s.name} loading="lazy" />
+            : <span class:list={['font-heading font-semibold', nameSize(g.tier)]}>{s.name}</span>;
+          return <li>{s.url ? <a class="text-ink no-underline hover:text-accent" href={s.url} rel="noopener">{inner}</a> : inner}</li>;
         })}
       </ul>
     </div>
   ))}
 </div>
-
-<style>
-  .sponsors { display: grid; gap: 2rem; }
-  .sponsors--compact { gap: 1.25rem; }
-  .sponsors__tier { font-family: var(--f-body); font-size: 0.95rem; font-weight: 600; color: var(--c-muted); margin-bottom: 0.75rem; }
-  .sponsors__list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 1rem 2.5rem; align-items: center; }
-  .sponsors__list img { max-height: 4rem; width: auto; }
-  .sponsors__list--main img { max-height: 6rem; }
-  .sponsors--compact .sponsors__list img { max-height: 3rem; }
-  .sponsors__name { font-family: var(--f-heading); font-weight: 600; font-size: 1.4rem; }
-  .sponsors__list--main .sponsors__name { font-size: 1.9rem; }
-  .sponsors--compact .sponsors__name { font-size: 1.15rem; }
-  .sponsors a { color: var(--c-ink); text-decoration: none; }
-  .sponsors a:hover { color: var(--c-accent); }
-</style>

@@ -1,11 +1,12 @@
 ---
 import { md } from '../../lib/format';
+import { wrap, section, prose } from '../../lib/ui';
 interface Props { title?: string; content: string; id?: string }
 const { title, content, id } = Astro.props;
 ---
-<section class="section" id={id}>
-  <div class="wrap">
+<section class={section} id={id}>
+  <div class={wrap}>
     {title && <h2>{title}</h2>}
-    <div class="prose" set:html={md(content)} />
+    <div class={prose} set:html={md(content)} />
   </div>
 </section>

@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import NewsCard from '../NewsCard.astro';
+import { wrap, section } from '../../lib/ui';
 interface Props { title?: string; count?: number; id?: string }
 const { title, count = 3, id } = Astro.props;
 const posts = (await getCollection('news', ({ data }) => !data.draft))
@@ -8,21 +9,15 @@ const posts = (await getCollection('news', ({ data }) => !data.draft))
   .slice(0, count);
 ---
 {posts.length > 0 && (
-  <section class="section" id={id}>
-    <div class="wrap">
-      <div class="ln__head">
+  <section class={section} id={id}>
+    <div class={wrap}>
+      <div class="flex justify-between items-baseline gap-4 flex-wrap">
         {title && <h2>{title}</h2>}
-        <a href="/news">Tutte le news</a>
+        <a class="font-semibold" href="/news">Tutte le news</a>
       </div>
-      <div class="ln__grid">
+      <div class="grid gap-x-gutter gap-y-10 grid-cols-[repeat(auto-fit,minmax(16rem,1fr))] mt-6">
         {posts.map((post) => <NewsCard post={post} />)}
       </div>
     </div>
   </section>
 )}
-
-<style>
-  .ln__head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
-  .ln__head a { font-weight: 600; }
-  .ln__grid { display: grid; gap: 2.5rem var(--gap); grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); margin-top: 1.5rem; }
-</style>

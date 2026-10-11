@@ -1,12 +1,13 @@
 ---
 import SponsorList from '../SponsorList.astro';
+import { wrap, sectionTint, lead } from '../../lib/ui';
 interface Props { title?: string; intro?: string; id?: string }
 const { title, intro, id } = Astro.props;
 ---
-<section class="section section--tint" id={id}>
-  <div class="wrap">
+<section class={sectionTint} id={id}>
+  <div class={wrap}>
     {title && <h2>{title}</h2>}
-    {intro && <p class="lead">{intro}</p>}
-    <div style="margin-top:2rem"><SponsorList /></div>
+    {intro && <p class={lead}>{intro}</p>}
+    <div class="mt-8"><SponsorList /></div>
   </div>
 </section>

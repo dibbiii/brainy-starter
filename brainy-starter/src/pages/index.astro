@@ -3,12 +3,13 @@
 import { getEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Blocks from '../components/Blocks.astro';
+import { wrap, section } from '../lib/ui';
 
 const page = await getEntry('pages', 'home');
 if (!page) throw new Error('Manca src/content/pages/home.md: creala dal CMS (Pagine → slug "home").');
 const { title, description, show_title, sections } = page.data;
 ---
 <Base title={title} description={description} hideFooterSponsors={sections?.some((s) => s.type === 'sponsors')}>
-  {show_title && <div class="wrap section"><h1>{title}</h1></div>}
+  {show_title && <div class:list={[wrap, section]}><h1>{title}</h1></div>}
   <Blocks sections={sections ?? []} />
 </Base>

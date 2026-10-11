@@ -21,7 +21,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = image ? new URL(image, Astro.site).href : undefined;
 ---
 <!doctype html>
-<html lang="it">
+<html lang="it" class="scroll-pt-20">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -38,8 +38,8 @@ const ogImage = image ? new URL(image, Astro.site).href : undefined;
     <meta name="twitter:card" content="summary_large_image" />
     <style is:inline set:html={themeCss()}></style>
   </head>
-  <body>
-    <a class="skip" href="#contenuto">Vai al contenuto</a>
+  <body class="bg-paper text-ink font-body text-[1.0625rem] leading-[1.6]">
+    <a class="absolute -left-[999px] top-2 z-[99] focus:left-2 focus:bg-paper focus:px-4 focus:py-2" href="#contenuto">Vai al contenuto</a>
     <Header />
     <main id="contenuto">
       <slot />

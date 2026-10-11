@@ -1,29 +1,20 @@
 ---
+import { wrap, segnavia, button, buttonPad } from '../../lib/ui';
 interface Props { title: string; subtitle?: string; image?: string; button_label?: string; button_url?: string; size?: 'large' | 'medium'; first?: boolean; id?: string }
 const { title, subtitle, image, button_label, button_url, size = 'large', first } = Astro.props;
 const Heading = first ? 'h1' : 'h2';
 ---
-<section class:list={['hero', `hero--${size}`, { 'hero--plain': !image }]}>
-  {image && <img class="hero__img" src={image} alt="" fetchpriority={first ? 'high' : 'auto'} />}
-  <div class="wrap hero__body">
-    <span class="segnavia" aria-hidden="true"></span>
-    <Heading class="hero__title">{title}</Heading>
-    {subtitle && <p class="hero__sub">{subtitle}</p>}
-    {button_label && button_url && <a class="button" href={button_url}>{button_label}</a>}
+<section class:list={[
+  'relative grid items-end text-paper bg-primary overflow-hidden',
+  size === 'large' ? 'min-h-[min(86vh,48rem)]' : 'min-h-[26rem]',
+  // Sfumatura scura sotto il testo, solo se c'è una foto
+  image && "after:content-[''] after:absolute after:inset-0 after:bg-[linear-gradient(to_top,color-mix(in_srgb,var(--c-ink)_78%,transparent)_0%,transparent_65%)]",
+]}>
+  {image && <img class="absolute inset-0 w-full h-full object-cover" src={image} alt="" fetchpriority={first ? 'high' : 'auto'} />}
+  <div class:list={[wrap, 'relative z-[1] w-full pt-16 pb-[clamp(3rem,7vw,5rem)]']}>
+    <span class={segnavia} aria-hidden="true"></span>
+    <Heading class="max-w-[16ch] mb-[0.35em] text-[clamp(2.8rem,8vw,5.5rem)]">{title}</Heading>
+    {subtitle && <p class="text-[clamp(1.1rem,2vw,1.35rem)] max-w-[36rem] mb-7">{subtitle}</p>}
+    {button_label && button_url && <a class:list={[button, buttonPad]} href={button_url}>{button_label}</a>}
   </div>
 </section>
-
-<style>
-  .hero { position: relative; display: grid; align-items: end; color: #fff; background: var(--c-primary); overflow: hidden; }
-  .hero--large { min-height: min(86vh, 48rem); }
-  .hero--medium { min-height: 26rem; }
-  .hero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-  .hero::after {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(to top, color-mix(in srgb, var(--c-ink) 78%, transparent) 0%, transparent 65%);
-  }
-  .hero--plain::after { display: none; }
-  .hero__body { position: relative; z-index: 1; padding-block: 4rem clamp(3rem, 7vw, 5rem); width: 100%; }
-  .hero__title { max-width: 16ch; margin-bottom: 0.35em; font-size: clamp(2.8rem, 8vw, 5.5rem); }
-  .hero__sub { font-size: clamp(1.1rem, 2vw, 1.35rem); max-width: 36rem; margin-bottom: 1.75rem; }
-</style>

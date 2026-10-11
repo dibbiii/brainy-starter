@@ -3,6 +3,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Blocks from '../components/Blocks.astro';
+import { wrap, segnavia } from '../lib/ui';
 
 export async function getStaticPaths() {
   const pages = await getCollection('pages', (p) => p.id !== 'home');
@@ -15,16 +16,10 @@ const startsWithHero = sections?.[0]?.type === 'hero';
 ---
 <Base title={title} description={description} hideFooterSponsors={sections?.some((s) => s.type === 'sponsors')}>
   {show_title && !startsWithHero && (
-    <header class="wrap page-head">
-      <span class="segnavia" aria-hidden="true"></span>
-      <h1>{title}</h1>
+    <header class:list={[wrap, 'pt-[clamp(2.5rem,7vw,5rem)] [&+.section]:pt-[clamp(1.5rem,4vw,2.5rem)]']}>
+      <span class={segnavia} aria-hidden="true"></span>
+      <h1 class="m-0">{title}</h1>
     </header>
   )}
   <Blocks sections={sections ?? []} />
 </Base>
-
-<style>
-  .page-head { padding-top: clamp(2.5rem, 7vw, 5rem); }
-  .page-head h1 { margin: 0; }
-  .page-head + :global(.section) { padding-top: clamp(1.5rem, 4vw, 2.5rem); }
-</style>

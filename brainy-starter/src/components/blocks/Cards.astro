@@ -1,38 +1,27 @@
 ---
 import { isExternal } from '../../lib/format';
+import { wrap, section, lead } from '../../lib/ui';
 interface Item { title: string; highlight?: string; text?: string; image?: string; url?: string }
 interface Props { title?: string; intro?: string; items: Item[]; id?: string }
 const { title, intro, items, id } = Astro.props;
 ---
-<section class="section" id={id}>
-  <div class="wrap">
+<section class={section} id={id}>
+  <div class={wrap}>
     {title && <h2>{title}</h2>}
-    {intro && <p class="lead">{intro}</p>}
-    <ul class="cards">
+    {intro && <p class={lead}>{intro}</p>}
+    <ul class="grid gap-x-gutter gap-y-10 grid-cols-[repeat(auto-fit,minmax(15rem,1fr))] mt-10">
       {items.map((c) => (
-        <li class="card">
-          {c.image && <img src={c.image} alt="" loading="lazy" />}
-          {c.highlight && <p class="card__hl">{c.highlight}</p>}
-          <h3>
+        <li class="group relative border-t-[3px] border-ink pt-4">
+          {c.image && <img class="aspect-[4/3] w-full object-cover mb-4 rounded-brand" src={c.image} alt="" loading="lazy" />}
+          {c.highlight && <p class="text-accent font-bold mb-1">{c.highlight}</p>}
+          <h3 class="text-[1.85rem] mb-[0.4rem]">
             {c.url
-              ? <a href={c.url} rel={isExternal(c.url) ? 'noopener' : undefined}>{c.title}</a>
+              ? <a class="text-ink no-underline group-hover:text-accent after:content-[''] after:absolute after:inset-0" href={c.url} rel={isExternal(c.url) ? 'noopener' : undefined}>{c.title}</a>
               : c.title}
           </h3>
-          {c.text && <p class="card__text">{c.text}</p>}
+          {c.text && <p class="text-muted m-0">{c.text}</p>}
         </li>
       ))}
     </ul>
   </div>
 </section>
-
-<style>
-  .cards { list-style: none; padding: 0; margin: 2.5rem 0 0; display: grid; gap: 2.5rem var(--gap); grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
-  .card { position: relative; border-top: 3px solid var(--c-ink); padding-top: 1rem; }
-  .card img { aspect-ratio: 4 / 3; width: 100%; object-fit: cover; margin-bottom: 1rem; border-radius: var(--radius); }
-  .card__hl { color: var(--c-accent); font-weight: 700; margin: 0 0 0.25rem; }
-  .card h3 { font-size: 1.85rem; margin-bottom: 0.4rem; }
-  .card h3 a { color: var(--c-ink); text-decoration: none; }
-  .card h3 a::after { content: ''; position: absolute; inset: 0; }
-  .card:hover h3 a { color: var(--c-accent); }
-  .card__text { color: var(--c-muted); margin: 0; }
-</style>

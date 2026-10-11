@@ -1,66 +1,45 @@
 ---
 import { site, sponsors, sponsorsInFooter } from '../lib/site';
+import { wrap, segnavia } from '../lib/ui';
 import SponsorList from './SponsorList.astro';
 interface Props { hideSponsors?: boolean }
 const { hideSponsors = false } = Astro.props;
 const year = new Date().getFullYear();
+
+// I link del footer sono bianchi (il fondo è il colore primario)
+const onDark = '[&_a]:text-paper [&_a:hover]:text-paper [&_a:hover]:decoration-2';
 ---
-<footer class="footer">
+<footer class="bg-primary text-paper">
   {!hideSponsors && sponsorsInFooter && sponsors.length > 0 && (
-    <div class="footer__sponsors">
-      <div class="wrap"><SponsorList compact /></div>
+    <div class="bg-paper text-ink py-10 border-t border-line">
+      <div class={wrap}><SponsorList compact /></div>
     </div>
   )}
-  <div class="wrap footer__grid">
+  <div class:list={[wrap, onDark, 'grid gap-8 grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] pt-14 pb-10']}>
     <div>
-      <span class="segnavia" aria-hidden="true"></span>
-      <p class="footer__name">{site.name}</p>
+      <span class={segnavia} aria-hidden="true"></span>
+      <p class="font-heading text-[2rem] font-bold leading-none mb-2">{site.name}</p>
       {site.tagline && <p>{site.tagline}</p>}
-      {site.footer_note && <p class="footer__note">{site.footer_note}</p>}
+      {site.footer_note && <p class="opacity-80 text-[0.95rem]">{site.footer_note}</p>}
     </div>
     <div>
-      <h2 class="footer__h">Contatti</h2>
+      <h2 class="text-[1.35rem] mb-3">Contatti</h2>
       {site.address && <p set:html={site.address.replace(/\n/g, '<br>')} />}
       {site.email && <p><a href={`mailto:${site.email}`}>{site.email}</a></p>}
       {site.phone && <p><a href={`tel:${site.phone.replace(/\s/g, '')}`}>{site.phone}</a></p>}
     </div>
     {site.socials && site.socials.length > 0 && (
       <div>
-        <h2 class="footer__h">Seguici</h2>
-        <ul class="footer__list">
-          {site.socials.map((s) => <li><a href={s.url} rel="noopener">{s.platform}</a></li>)}
+        <h2 class="text-[1.35rem] mb-3">Seguici</h2>
+        <ul>
+          {site.socials.map((s) => <li class="mb-[0.4rem]"><a href={s.url} rel="noopener">{s.platform}</a></li>)}
         </ul>
       </div>
     )}
   </div>
-  <div class="wrap footer__legal">
+  <div class:list={[wrap, onDark, 'flex flex-wrap gap-x-6 gap-y-2 border-t border-paper/20 pt-5 pb-8 text-[0.9rem] opacity-85 sm:[&>span:last-child]:ml-auto']}>
     <span>© {year} {site.name}{site.tax_id && ` · ${site.tax_id}`}</span>
     {site.privacy_url && <a href={site.privacy_url}>Informativa privacy</a>}
     <span>Sito realizzato da <a href="https://www.brainylabs.it/" rel="noopener">Brainy Labs</a></span>
   </div>
 </footer>
-
-<style>
-  .footer { background: var(--c-primary); color: #fff;  }
-  .footer a { color: #fff; }
-  .footer a:hover { color: #fff; text-decoration-thickness: 2px; }
-  .footer__sponsors { background: var(--c-paper); color: var(--c-ink); padding-block: 2.5rem; border-top: 1px solid var(--c-line); }
-  .footer__sponsors a { color: var(--c-ink); }
-  .footer__grid {
-    display: grid; gap: 2rem;
-    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-    padding-block: 3.5rem 2.5rem;
-  }
-  .footer__name { font-family: var(--f-heading); font-size: 2rem; font-weight: 700; line-height: 1; margin-bottom: 0.5rem; }
-  .footer__note { opacity: 0.8; font-size: 0.95rem; }
-  .footer__h { font-size: 1.35rem; margin-bottom: 0.75rem; }
-  .footer__list { list-style: none; padding: 0; margin: 0; }
-  .footer__list li { margin-bottom: 0.4rem; }
-  .footer__legal {
-    display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem;
-    border-top: 1px solid rgb(255 255 255 / 0.2);
-    padding-block: 1.25rem 2rem; font-size: 0.9rem; opacity: 0.85;
-  }
-  .footer__legal span:last-child { margin-left: auto; }
-  @media (max-width: 40rem) { .footer__legal span:last-child { margin-left: 0; } }
-</style>
