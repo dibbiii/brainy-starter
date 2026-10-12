@@ -81,6 +81,24 @@ Guida dettagliata, con un esempio completo e i controlli da fare:
 
 Se il blocco può servire ad altri clienti, aggiungilo **qui nella base**.
 
+## Il testo scritto nel pannello (Markdown)
+
+L'editor di testo del pannello salva bene titoli, elenchi, citazioni, immagini, link, grassetto e
+corsivo. **Due costrutti vengono riscritti in modo diverso quando una voce che li contiene è
+modificata e salvata** (verificato riproducendo il salvataggio di 120 voci di un sito reale):
+
+- le **linee orizzontali** (`---`, `* * *`) diventano un elenco con asterischi letterali;
+- un **titolo dentro una citazione** (`> ### Titolo`) perde il titolo e mostra i simboli `###`.
+
+Per questo i contenuti scritti a mano o importati vanno senza questi due costrutti: per separare le
+sezioni si usano i titoli. Sveltia non elenca tra la sintassi supportata nemmeno le tabelle (e non
+è stato provato cosa succede con l'HTML scritto nel testo): meglio evitarli.
+
+Altre riscritture sono invece innocue, e compaiono al primo salvataggio: `*corsivo*` diventa
+`_corsivo_`, `***x***` diventa `**_x_**`, `**[testo](url)**` diventa `[**testo**](url)`. Il testo si
+vede identico. Un campo viene riscritto **solo se lo si modifica**: cambiare soltanto il titolo di
+una news non tocca il suo testo.
+
 ## Personalizzare un cliente: `src/brand/`
 
 Colori, caratteri e testi si cambiano dal pannello. Per le cose che il pannello non
