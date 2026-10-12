@@ -1,6 +1,5 @@
 node_modules/
 dist/
 .astro/
-public/admin/vendor/
 .env
 .DS_Store
